@@ -83,6 +83,7 @@ class Agent:
     def handle_agent_response(self, action_context: ActionContext, response: str) -> dict:
         try:
             action_def, action_invocation = self.get_action(response)
+            print(f"Action chosen: {action_def.name} with args {action_invocation['args']}")
             if hasattr(self.environment, 'execute_with_ai_review'):
                 result = self.environment.execute_with_ai_review(
                     self, action_context, action_def, action_invocation["args"]
