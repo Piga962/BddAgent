@@ -26,6 +26,7 @@ class Agent:
         self.agent_language = agent_language
         self.action_registry = action_registry
         self.environment = environment
+        self.agent_name = agent_name
         self.capabilities = capabilities or []
         self.max_iterations = max_iterations
 
@@ -52,7 +53,7 @@ class Agent:
         
     def set_current_task(self, memory: Memory, task: str):
         memory.add_memory({
-            "type": "user",
+            "role": "user",
             "content": task,
             "timestamp": datetime.now().isoformat()
         })
@@ -83,7 +84,7 @@ class Agent:
     def handle_agent_response(self, action_context: ActionContext, response: str) -> dict:
         try:
             action_def, action_invocation = self.get_action(response)
-            print(f"Action chosen: {action_def.name} with args {action_invocation['args']}")
+            print(f"Action chosen by {self.agent_name}: {action_def.name}")
             if hasattr(self.environment, 'execute_with_ai_review'):
                 result = self.environment.execute_with_ai_review(
                     self, action_context, action_def, action_invocation["args"]

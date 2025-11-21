@@ -50,7 +50,7 @@ INSTRUCTIONS:
 
 When you need to use a tool, the system will handle the function calling automatically.
 
-Think stgep by step and choose the mostg appropriate tool for each task.
+Think step by step and choose the mostg appropriate tool for each task.
 """
         return [{
             "role": "system",
@@ -66,9 +66,9 @@ Think stgep by step and choose the mostg appropriate tool for each task.
             if not content:
                 content = json.dumps(item, indent=2)
 
-            if item.get("type") == "assistant":
+            if item.get("role") == "assistant":
                 mapped_items.append({"role": "assistant", "content": content})
-            elif item.get("type") == "environment":
+            elif item.get("role") == "environment":
                 mapped_items.append({"role": "assistant", "content": content})
             else:
                 mapped_items.append({"role": "user", "content": content})
@@ -92,7 +92,6 @@ Think stgep by step and choose the mostg appropriate tool for each task.
                 },
             }
             tools.append(tool_def)
-
         return tools
     
     def construct_prompt(self,

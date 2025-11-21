@@ -10,6 +10,12 @@ from game.memory import Prompt
 
 load_dotenv()
 
+# Configurar Azure para litellm
+if os.getenv("AZURE2_OPENAI_KEY"):
+    os.environ["AZURE_API_KEY"] = os.getenv("AZURE2_OPENAI_KEY")
+    os.environ["AZURE_API_BASE"] = os.getenv("AZURE2_OPENAI_ENDPOINT")
+    os.environ["AZURE_API_VERSION"] = os.getenv("AZURE2_OPENAI_API_VERSION", "2024-12-01-preview")
+
 @dataclass
 class LLMConfig:
     provider: str
