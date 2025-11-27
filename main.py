@@ -49,10 +49,10 @@ class DevEvalProcessor:
 
                 except json.JSONDecodeError as e:
                     print(f"Error decoding JSON line: {line}\nError: {str(e)}")
-        return tests
+        return tests[:185]
 
     def generate_jsonl(self):
-        out_file = os.path.join(self.output_path, self.mode + '_results24.jsonl')
+        out_file = os.path.join(self.output_path, self.mode + '_results3.jsonl')
         with open(out_file, 'w', encoding='utf-8') as f:
             for result in self.results:
                 json_line = json.dumps(result)
@@ -64,92 +64,153 @@ class DevEvalProcessor:
         requirements = test['input_code']
         
         context_str = ""
-        if mode == 'local_file_completion':
-            context_str = f"Context: {test['context_above']}"
+        context_instruction = ""
+    
+        if mode == 'without_context':
+            context_instruction = "Generate code based only on requirements and common Python patterns."
+        elif mode == 'local_file_completion':
+            context_str = f"Context above: {test['context_above']}"
+            context_instruction = "Use patterns, imports, and helper functions from the context above."
         elif mode == 'local_file_infiling':
-            context_str = f"Context Above: {test['context_above']}\nContext Below: {test['context_below']}"
+            context_str = f"Context above: {test['context_above']}\nContext below: {test['context_below']}"
+            context_instruction = "Use patterns from both context above and below. Ensure code fits between them."
         
-        base_task = f"""
-    DEVEVAL TASK: {namespace}
-    Requirements: {requirements}
-    {context_str}
+        task = f"""
+DEVEVAL COORDINATION: {namespace}
 
-    MANDATORY WORKFLOW:
-    1. Analyze requirements and context to produce an analysis_result (you can use tools if needed)
-    2. Use analysis_result to generate the complete function.
-    3. Extract ONLY the function body (no 'def' line, no signature) from the generated function.
-    4. Ensure the function body uses exactly 4 spaces for indentation.
+Requirements: {requirements}
+{context_str}
 
-    CRITICAL: Generate a complete working Python function, the extract only the boy.
-    """
-        return base_task
+STRATEGY: {context_instruction}
+
+EXECUTE WORKFLOW:
+1. Use analyze_deveval_requirements to understand the task
+2. Use call_agent_with_reflection to call 'DevEvalCoder' with coding task
+3. Use call_agent_with_selected_context to call 'DevEvalReviewer' for validation
+4. Extract final clean function body
+5. validate_function_body(function_body=<step 3 result>, requirements="{requirements}")
+   - If validation fails, regenerate from step 2 with fixes
+6. terminate(message=<validated function body from step 3>)
+
+Coordinate the team to produce working Python code.
+CRITICAL: Final output must be ONLY function body, 4-space indented, no 'def' line.
+"""
+        return task
 
     def extract_final_code_from_memory(self, memory, namespace=None):
         """Extraer código con debugging."""
 
         def extract_function_body_from_complete(text, is_from_json=False):
-            """Extracción que maneja correctamente funciones helper internas."""
-            print("\n🔍 DEBUGGING EXTRACTION - RAW TEXT:")
-            print(text[:300] + "...")
-
-            # Limpiar markdown
+            """Extracción robusta que maneja JSON anidados."""
+            
+            # Paso 1: Desenrollar JSON anidados múltiples veces
+            original_text = text
+            for _ in range(5):  # Máximo 5 niveles de anidamiento
+                try:
+                    data = json.loads(text)
+                    if isinstance(data, dict):
+                        # Buscar 'result' en cualquier nivel
+                        if 'result' in data:
+                            text = str(data['result'])
+                        elif 'agent' in data and 'result' in data:
+                            text = str(data['result'])
+                    elif isinstance(data, str):
+                        text = data
+                    else:
+                        break
+                except json.JSONDecodeError:
+                    break
+            
+            # Paso 2: Limpiar markdown
             text = re.sub(r'```python\s*\n(.*?)\n```', r'\1', text, flags=re.DOTALL)
             text = re.sub(r'```\s*\n(.*?)\n```', r'\1', text, flags=re.DOTALL)
             
+            # Paso 3: Buscar función def explícitamente
             lines = text.split('\n')
-            body_lines = []
-            found_main_def = False
-            main_function_indent = 0
             
-            for line in lines:
+            # Encontrar línea que contiene 'def '
+            function_start = -1
+            for i, line in enumerate(lines):
+                if 'def ' in line and '(' in line and ':' in line:
+                    function_start = i
+                    break
+            
+            if function_start == -1:
+                return None
+            
+            # Extraer desde la función encontrada
+            function_lines = lines[function_start:]
+            body_lines = []
+            found_def = False
+            main_indent = 0
+            in_docstring = False
+            docstring_char = None
+            
+            for line in function_lines:
                 stripped = line.strip()
                 current_indent = len(line) - len(line.lstrip())
                 
-                # Si es JSON, empezar desde la primera línea (sin buscar def)
-                if is_from_json:
-                    if not found_main_def and stripped.startswith('def ') and ':' in stripped:
-                        found_main_def = True
-                        main_function_indent = current_indent  # Asumir que ya está limpio
+                if not found_def and stripped.startswith('def '):
+                    found_def = True
+                    main_indent = current_indent
+                    continue
+                
+                if found_def:
+                    # 🔥 SALTAR DOCSTRINGS
+                    if not in_docstring:
+                        if stripped.startswith('"""') or stripped.startswith("'''"):
+                            docstring_char = '"""' if stripped.startswith('"""') else "'''"
+                            if stripped.count(docstring_char) >= 2:
+                                # Docstring de una línea, saltar completamente
+                                continue
+                            else:
+                                # Inicio de docstring multilínea
+                                in_docstring = True
+                                continue
+                    else:
+                        # Estamos dentro de docstring, buscar el final
+                        if docstring_char and docstring_char in line:
+                            in_docstring = False
+                            docstring_char = None
                         continue
                     
+                    # Código real de la función
                     if stripped:
-                        if current_indent <= main_function_indent:
+
+                        #### Nueva mierda, ver si funciona o si es pura cola xd
+
+                        if current_indent <= main_indent and stripped.startswith('def ') and current_indent == main_indent:
+                            break  # Nueva función encontrada
+                        
+                        # Detectar texto explicativo final
+                        if (current_indent <= main_indent and 
+                            any(phrase in stripped.lower() for phrase in [
+                                'this completes', 'task completed', 'implementation complete'
+                            ])):
+                            break
+                        
+                        # Normalizar indentación
+                        if current_indent <= main_indent:
                             body_lines.append('    ' + stripped)
                         else:
-                            relative_indent = current_indent - main_function_indent
-                            new_indent = 4 + relative_indent
+                            relative = current_indent - main_indent
+                            new_indent = 4 + (relative // 4) * 4
                             body_lines.append(' ' * new_indent + stripped)
                     else:
                         body_lines.append('')
-                else:
-                    # Si es texto, buscar y saltar la línea def
-                    if not found_main_def and stripped.startswith('def ') and ':' in stripped:
-                        found_main_def = True
-                        main_function_indent = current_indent
-                        continue  # SALTAR la línea def
-                    
-                    if found_main_def:
-                        if stripped:
-                            if current_indent <= main_function_indent:
-                                body_lines.append('    ' + stripped)
-                            else:
-                                relative_indent = current_indent - main_function_indent
-                                new_indent = 4 + relative_indent
-                                body_lines.append(' ' * new_indent + stripped)
-                        else:
-                            body_lines.append('')
             
+            # Limpiar resultado
             while body_lines and not body_lines[-1].strip():
                 body_lines.pop()
             
             result = '\n'.join(body_lines) if body_lines else None
-    
+            
             if result:
-                # Remover texto de sesión completada
                 result = re.sub(r'\s*🎉.*?Agent session completed.*$', '', result, flags=re.DOTALL)
                 result = result.rstrip()
             
             return result
+
         
         print(f"\n🔍 DEBUGGING EXTRACTION for {namespace}:")
         
@@ -256,10 +317,10 @@ class DevEvalProcessor:
                         Goal(3, "Quality Assurance", "Ensure code meets DevEval stgandards through review tools")
                     ],
                     agent_language=AgentFunctionCallingActionLanguage(),
-                    action_registry=DecoratorActionRegistry(tags=[ "agent", "deveval"]),
+                    action_registry=DecoratorActionRegistry(tags=[ "selective", "deveval", "analysis"]),
                     generate_response=llm_function,
                     environment=ActionContextEnvironment(),
-                    agent_name="DevEvalMainAgent",
+                    agent_name="DevEvalCoordinator",
                     max_iterations=12
                 )
                 codingAgent = Agent(
@@ -271,14 +332,13 @@ class DevEvalProcessor:
                     action_registry=DecoratorActionRegistry(tags=[ "deveval"]),
                     generate_response=llm_function,
                     environment=ActionContextEnvironment(),
-                    agent_name="DevEvalCodingAgent",
+                    agent_name="DevEvalCoder",
                     max_iterations=8
                 )
                 codeReviewer = create_code_reviewer_agent(llm_function)
 
-                registry.register_agent("coding_agent", codingAgent.run)
-                registry.register_agent("main_agent", mainAgent.run)
-                registry.register_agent("code_reviewer", codeReviewer.run)
+                registry.register_agent("DevEvalCoder", codingAgent.run)
+                registry.register_agent("DevEvalReviewer", codeReviewer.run)
                 mainAgent.action_registry.register_terminate_tool()
                 codingAgent.action_registry.register_terminate_tool()
                 codeReviewer.action_registry.register_terminate_tool()
@@ -289,41 +349,9 @@ class DevEvalProcessor:
                     "agent_registry": registry,
                     "target_language": "python",
                     "project_type": "deveval_function",
-                    "namespace": namespace
+                    "namespace": namespace,
+                    "shared_memory": sharedMemory
                 }
-#                 if self.mode == 'without_context':
-#                     task = f"""
-# Given this requirements, implement ONLY the function body (without signature):
-# Requirements:
-# {requirement}
-
-# Return only the function body without any additional explanations, and with proper indentation (4 spaces).
-# """
-#                 elif self.mode == 'local_file_completion':
-#                     task = f"""
-# Given this context and requirements, implement ONLY the function body (without signature):
-# Context:
-# {context_above}
-
-# Requirements:
-# {requirement}
-
-# Return ONLY the function body without any additional explanations, and with proper indentation (4 spaces).
-# """
-#                 elif self.mode == 'local_file_infiling':
-#                     task = f"""
-# Given this context and requirements, implement ONLY the function body (without signature):
-# Context above:
-# {context_above}
-
-# Context below:
-# {context_below}
-
-# Requirements:
-# {requirement}
-
-# Return ONLY the function body without any additional explanations, with proper indentation (4 spaces).
-# """
 
                 result_memory = mainAgent.run(
                     user_input=task,
@@ -333,8 +361,6 @@ class DevEvalProcessor:
                 final_code = self.extract_final_code_from_memory(result_memory, namespace=namespace)
 
                 print(f"\n🛠️ Cleaned Final Code for {namespace}:\n{final_code}\n")
-
-
                     # print(final_result)
                     # print(f"\nFinal Result for test {namespace}: ", final_result.get("content", "No content"))
                 self.results.append({
@@ -425,7 +451,7 @@ def create_code_reviewer_agent(llm_function) -> Agent:
         action_registry=action_registry,
         generate_response=llm_function,
         environment=environment,
-        agent_name="CodeReviewer",
+        agent_name="DevEvalReviewer",
         max_iterations=10
     )
 
@@ -491,7 +517,7 @@ def main():
     if len(sys.argv) >1:
         mode = sys.argv[1]
 
-    processor = DevEvalProcessor(lm_prompt_jsonl_path="C:/Users/cesar/7mo Semestre/DevEval/DevEval/Experiments/prompt/LM_prompt_elements.jsonl", mode='local_file_infiling', output_path='results')
+    processor = DevEvalProcessor(lm_prompt_jsonl_path="C:/Users/cesar/7mo Semestre/DevEval/DevEval/Experiments/prompt/LM_prompt_elements.jsonl", mode='local_file_completion', output_path='results')
     # processor = DevEvalProcessor(lm_prompt_jsonl_path="/home/piga/BddAgent/data/LM_prompt_elements.jsonl", mode=mode, output_path='results')
     processor.process()
 

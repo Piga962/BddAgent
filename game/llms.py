@@ -11,10 +11,10 @@ from game.memory import Prompt
 load_dotenv()
 
 # Configurar Azure para litellm
-if os.getenv("AZURE2_OPENAI_KEY"):
-    os.environ["AZURE_API_KEY"] = os.getenv("AZURE2_OPENAI_KEY")
-    os.environ["AZURE_API_BASE"] = os.getenv("AZURE2_OPENAI_ENDPOINT")
-    os.environ["AZURE_API_VERSION"] = os.getenv("AZURE2_OPENAI_API_VERSION", "2024-12-01-preview")
+if os.getenv("AZURE4_OPENAI_KEY"):
+    os.environ["AZURE_API_KEY"] = os.getenv("AZURE4_OPENAI_KEY")
+    os.environ["AZURE_API_BASE"] = os.getenv("AZURE4_OPENAI_ENDPOINT")
+    os.environ["AZURE_API_VERSION"] = os.getenv("AZURE4_OPENAI_API_VERSION", "2024-12-01-preview")
 
 @dataclass
 class LLMConfig:
@@ -160,7 +160,7 @@ def create_simple_llm_function(model_name: str) -> Callable:
                 "model": model_name,
                 "messages": prompt.messages,
                 "max_tokens": 1500,
-                "temperature": 0.7,
+                "temperature": 0.2,
             }
 
             if prompt.tools:

@@ -38,20 +38,20 @@ class AgentFunctionCallingActionLanguage(AgentLanguage):
         ])
 
         system_message = f"""
-
 {goal_instructions}
 
-INSTRUCTIONS:
-- Focus on achieving your goals in priority order
-- Usae the available tools to accomplist tasks efficiently
-- Be thorough but concise with you reasoning
-- Handle error gracefully and adapt your approach as needed
-- Always strive to privde high-quality results
+CORE INSTRUCTIONS:
+- Execute goals in priority order systematically
+- Use available tools effectively to accomplish tasks
+- Generate precise, working solutions
+- When coding: produce functional, clean code without unnecessary complexity
+- When reviewing: focus on correctness and requirements compliance
+- Be direct and result-oriented
+- Avoid explanations unless specifically requested
 
-When you need to use a tool, the system will handle the function calling automatically.
-
-Think step by step and choose the mostg appropriate tool for each task.
+Choose tools strategically. Prioritize working solutions over perfect ones.
 """
+        
         return [{
             "role": "system",
             "content": system_message

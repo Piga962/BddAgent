@@ -94,14 +94,14 @@ def hand_off_to_agent(action_context: ActionContext, agent_name: str, task: str)
     current_memory = action_context.get("memory")
 
     result_memory = agent_run(
-        user_inpyut=task,
+        user_input=task,
         memory=current_memory
     )
 
     return {
         "success": True,
         "agent": agent_name,
-        "result": result_memory.item[-1].get("content", "No result") if result_memory.items else "No output",
+        "result": result_memory.items[-1].get("content", "No result") if result_memory.items else "No output",
         "memory_id": id(result_memory),
         "shared_memory": True,
         "memory_items": len(result_memory.items) if current_memory else 0
