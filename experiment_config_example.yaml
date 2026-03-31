@@ -1,0 +1,61 @@
+# BddAgent Experiment Configuration
+# Copy this file and modify for your experiments
+
+experiment_id: "exp_example_001"
+experiment_name: "BDD-LLM Multi-Model Comparison"
+description: |
+  Evaluation of BDD-driven code generation using multiple LLM providers.
+  Compares GPT-4, GPT-4-mini, and Gemini models on DevEval benchmark.
+
+# Models to evaluate
+models:
+  - name: "GPT-4.1-mini"
+    provider: "azure"
+    model_id: "gpt-4.1-mini"
+    temperature: 0.2
+    max_tokens: 4096
+    seed: 42
+
+  - name: "GPT-4o"
+    provider: "openai"
+    model_id: "gpt-4o"
+    temperature: 0.2
+    max_tokens: 4096
+    seed: 42
+
+  - name: "Gemini-2.5-Pro"
+    provider: "gemini"
+    model_id: "gemini-2.5-pro"
+    temperature: 0.2
+    max_tokens: 4096
+
+# Dataset configuration
+dataset:
+  path: "data/LM_prompt_elements.jsonl"  # Path to your DevEval dataset
+  mode: "local_file_completion"  # Options: without_context, local_file_completion, local_file_infiling
+  sample_size: null  # null = use all samples, or specify a number
+  sample_seed: 42  # For reproducible sampling
+  stratify_by: null  # Optional field to stratify sampling by
+
+# Metrics collection settings
+metrics:
+  collect_timing: true
+  collect_tokens: true
+  collect_cost: true
+  collect_iterations: true
+  validate_syntax: true
+  validate_runtime: false  # Set to true if you have test cases to run
+  code_quality_metrics: true
+
+# Output settings
+output:
+  base_dir: "results"
+  save_raw_outputs: true
+  save_metrics_json: true
+  save_summary_csv: true
+  save_failed_cases: true
+
+# Reproducibility settings
+random_seed: 42
+max_retries: 3
+timeout_seconds: 300
