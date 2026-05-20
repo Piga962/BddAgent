@@ -152,3 +152,111 @@ Choose tools strategically. Prioritize working solutions over perfect ones.
         Can be overridden to implement retry logic with modified prompts.
         """
         return prompt
+
+class AgentJSONActionLanguage(AgentLanguage):
+    def __init__(self):
+        super().__init__()
+
+    def format_goals(self, goals):
+        if not goals:
+            return []
+        
+        sorted_goals = sorted(goals, key=lambda g: g.priority)
+        sep = "\n" + "="*50 + "\n"
+        goal_instructions = "\n\n".join([
+            f"GOAL {goal.priority}: {goal.name}{sep}{goal.description}{sep}"
+            for goal in sorted_goals
+        ])
+
+        action_format = '''You MUST respond with a JSON object in this exact format:
+```json
+{
+    "tool_name": "name_of_tool",
+    "args": {
+        "arg1": "value1",
+        "arg2": "value2"
+    }
+}
+```
+Do not include any other text outside the JSON block.'''
+
+        system_message = f"""
+{goal_instructions}
+
+CORE INSTRUCTIONS:
+- Execute goals in priority order systematically
+- Use available tools effectively to accomplish tasks
+- Be direct and result-oriented
+
+{action_format}
+"""
+        return [{"role": "system", "content": system_message}]
+
+    def format_memory(self, memory):
+        items = memory.get_memories()
+        mapped_items = []
+        for item in items:
+            content = item.get("content", None)
+            if not content:
+                content = json.dumps(item, indent=2)
+            if item.get("role") == "assistant":
+                mapped_items.append({"role": "assistant", "content": content})
+            elif item.get("role") == "environment":
+                mapped_items.append({"role": "assistant", "content": content})
+            else:
+                mapped_items.append({"role": "user", "content": content})
+        return mapped_items
+
+    def format_actions(self, actions):
+        action_list = []
+        for action in actions:
+            params = action.parameters.get("properties", {})
+            param_str = ", ".join([
+                f"{name} ({info.get('type', 'string')})"
+                for name, info in params.items()
+            ])
+            action_list.append(f"- {action.name}({param_str}): {action.description}")
+        
+        return "\n".join(action_list)
+
+    def construct_prompt(self, actions, environment, goals, memory):
+        prompt_messages = self.format_goals(goals)
+        
+        # Agregar lista de acciones disponibles al system message
+        action_descriptions = self.format_actions(actions)
+        prompt_messages[0]["content"] += f"\n\nAVAILABLE TOOLS:\n{action_descriptions}"
+        
+        prompt_messages.extend(self.format_memory(memory))
+
+        return Prompt(
+            messages=prompt_messages,
+            tools=[],  # Sin tools nativas, Qwen decide por JSON
+            metadata={
+                "agent_language": "json",
+                "num_goals": len(goals),
+                "num_actions": len(actions),
+            }
+        )
+
+    def parse_response(self, response):
+        try:
+            # Extraer JSON del bloque markdown
+            if "```json" in response:
+                start = response.find("```json") + 7
+                end = response.rfind("```")
+                json_text = response[start:end].strip()
+            elif "```" in response:
+                start = response.find("```") + 3
+                end = response.rfind("```")
+                json_text = response[start:end].strip()
+            else:
+                json_text = response.strip()
+
+            parsed = json.loads(json_text)
+            if "tool_name" in parsed and "args" in parsed:
+                return parsed
+            else:
+                return {"tool_name": "terminate", "args": {"message": response}}
+
+        except json.JSONDecodeError:
+            return {"tool_name": "terminate", "args": {"message": response}}

@@ -187,7 +187,12 @@ Select memories that provide important context, requirements, constraints, or ba
     # Run agent with filtered memory
     result_memory = agent_run(
         user_input=task,
-        memory=filtered_memory
+        memory=filtered_memory,
+        action_context_props={
+            "llm": action_context.get("llm"),
+            "agent_registry": action_context.get("agent_registry"),
+            "dataset_path": action_context.get("dataset_path")
+        }
     )
 
     # Add selection reasoning to current memory
