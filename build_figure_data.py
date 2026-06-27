@@ -98,8 +98,103 @@ def build_models_data():
     return out
 
 
+# ---- fig5 (HumanEval+ robustness) and fig9 (three-benchmark) --------------
+
+# The 5 models the paper shows for HumanEval+ robustness.
+ROBUSTNESS_MODELS = {"GPT-4o", "GPT-5.3-codex", "gpt-35-turbo", "Llama-3.3-70B", "Gemini-2.5-Flash"}
+
+SUITE_DISPLAY = dict(MODEL_DISPLAY)
+SUITE_DISPLAY["Llama-3.3-70B-Instruct"] = "Llama-3.3-70B"
+
+# Canonical ClassEval / LiveCodeBench runs per model (the run reproducing the
+# paper's Pass@1). A list means the run was done in chunks and is summed.
+CLASSEVAL_RUNS = {
+    "gpt-4o": "20260402_124403", "gpt-5.3-codex": "20260402_221307",
+    "gpt-4.1": "20260403_114331", "gpt-35-turbo": "20260402_172349",
+    "claude-sonnet-4-20250514": "20260402_124418",
+    "claude-haiku-4-5-20251001": ["20260402_210301", "20260403_130244"],  # 39 + 61 = 100
+    "gemini-3.1-flash-lite-preview": "20260403_114349", "gemini-2.5-flash": "20260401_232301",
+}
+LIVECODEBENCH_RUNS = {
+    "gpt-4o": "20260402_164225", "gpt-5.3-codex": "20260402_215204",
+    "gpt-4.1": "20260403_114332", "gpt-35-turbo": "20260402_180436",
+    "claude-sonnet-4-20250514": "20260402_172347",
+    "gemini-3.1-flash-lite-preview": "20260402_184844",
+    # Gemini-2.5-Flash: not in paper. Claude-Haiku-4.5: see UNVERIFIED below.
+}
+# Cell that could NOT be reproduced from the committed results (no run or chunk
+# combination matches the paper's value). Carried from the paper, flagged.
+UNVERIFIED = {"Claude-Haiku-4.5": {"LiveCodeBench": [22, 14, 16]}}
+
+
+def _summary_rate_ints(subdir, model_id, ts):
+    """Rounded integer Pass@1 (bdd, cot, direct) from one summary file."""
+    f = RESULTS / subdir / f"summary_{model_id}_{ts}.json"
+    c = json.loads(f.read_text())["conditions"]
+    return tuple(round(c[k]["pass_rate"] * 100) for k in ("bdd", "cot", "direct"))
+
+
+def _summary_counts(subdir, model_id, ts):
+    f = RESULTS / subdir / f"summary_{model_id}_{ts}.json"
+    c = json.loads(f.read_text())["conditions"]
+    return {k: (c[k]["passed"], c[k]["total"]) for k in ("bdd", "cot", "direct")}
+
+
+def _bench_rate(subdir, model_id, pin):
+    if pin is None:
+        return None
+    if isinstance(pin, list):  # summed chunks
+        tot = {k: [0, 0] for k in ("bdd", "cot", "direct")}
+        for ts in pin:
+            for k, (p, n) in _summary_counts(subdir, model_id, ts).items():
+                tot[k][0] += p; tot[k][1] += n
+        return tuple(round(p / n * 100) for p, n in (tot[k] for k in ("bdd", "cot", "direct")))
+    return _summary_rate_ints(subdir, model_id, pin)
+
+
+def build_robustness():
+    """HumanEval+ robustness (%) per model from humaneval_plus_summary_v2.json."""
+    hp = json.loads((RESULTS / "humaneval_plus" / "humaneval_plus_summary_v2.json").read_text())
+    out = {}
+    for model_id, conds in hp.items():
+        disp = SUITE_DISPLAY.get(model_id)
+        if disp not in ROBUSTNESS_MODELS:
+            continue
+        out[disp] = {k: round(conds[k]["robustness"] * 100, 1) for k in ("bdd", "cot", "direct")}
+    return out
+
+
+def build_three_bench(models_data):
+    """Per-model (HumanEval, ClassEval, LiveCodeBench) tuples for fig9."""
+    out = {}
+    for model_id, disp in SUITE_DISPLAY.items():
+        if disp not in {m for m in _THREE_BENCH_MODELS}:
+            continue
+        he = models_data.get(disp)
+        human = (he["bdd"], he["cot"], he["direct"]) if he else None
+        ce = _bench_rate("classeval", model_id, CLASSEVAL_RUNS.get(model_id))
+        lc = _bench_rate("livecodebench", model_id, LIVECODEBENCH_RUNS.get(model_id))
+        if lc is None and disp in UNVERIFIED:
+            lc = tuple(UNVERIFIED[disp]["LiveCodeBench"])
+        out[disp] = {"HumanEval": human, "ClassEval": ce, "LiveCodeBench": lc}
+    return out
+
+
+# The 8 models fig9 shows (no Llama / codex-mini in the three-benchmark panel).
+_THREE_BENCH_MODELS = {
+    "GPT-4o", "GPT-5.3-codex", "GPT-4.1", "gpt-35-turbo", "Claude-Sonnet-4",
+    "Claude-Haiku-4.5", "Gemini-3.1-Flash-Lite-Preview", "Gemini-2.5-Flash",
+}
+
+
 def build_data():
-    return {"MODELS_DATA": build_models_data()}
+    md = build_models_data()
+    return {
+        "MODELS_DATA": md,
+        "ROBUSTNESS_DATA": build_robustness(),
+        "THREE_BENCH_DATA": build_three_bench(md),
+        "_unverified": UNVERIFIED,
+    }
 
 
 PASS_KEYS = {"bdd", "cot", "direct"}  # Pass@1 (%) — must match the paper exactly
@@ -128,15 +223,41 @@ def _compare(label, derived, hardcoded):
 def main():
     data = build_data()
     if "--check" in sys.argv:
-        from generate_figures import _PAPER_MODELS_DATA  # pristine paper literals
+        from generate_figures import (_PAPER_MODELS_DATA, _PAPER_ROBUSTNESS_DATA,
+                                       _PAPER_THREE_BENCH_DATA)
         print("Cross-checking results/ against the paper literals in generate_figures.py ...")
         pass_mism, tok_warn = _compare("MODELS_DATA", data["MODELS_DATA"], _PAPER_MODELS_DATA)
-        if pass_mism:
-            print(f"\nFAIL: {pass_mism} model(s) with Pass@1 mismatch vs the paper.")
+        r_mism, _ = _compare("ROBUSTNESS_DATA", data["ROBUSTNESS_DATA"], _PAPER_ROBUSTNESS_DATA)
+
+        # three-benchmark: dict of {bench: tuple|None}; flag UNVERIFIED cells as warnings
+        tb_mism = tb_warn = 0
+        derived_tb, paper_tb = data["THREE_BENCH_DATA"], _PAPER_THREE_BENCH_DATA
+        for m in sorted(set(derived_tb) | set(paper_tb)):
+            for bench in ("HumanEval", "ClassEval", "LiveCodeBench"):
+                d = (derived_tb.get(m) or {}).get(bench)
+                p = (paper_tb.get(m) or {}).get(bench)
+                d = tuple(d) if isinstance(d, (list, tuple)) else d
+                p = tuple(p) if isinstance(p, (list, tuple)) else p
+                if bench in UNVERIFIED.get(m, {}):
+                    # carried from the paper because no committed run reproduces it
+                    tb_warn += 1
+                    print(f"  [THREE_BENCH] {m}/{bench}: UNVERIFIED — no committed run reproduces paper={p}; value carried from paper, not derived")
+                elif d != p:
+                    tb_mism += 1
+                    print(f"  [THREE_BENCH] {m}/{bench}: paper={p} results={d}")
+
+        total_fail = pass_mism + r_mism + tb_mism
+        print()
+        if total_fail:
+            print(f"FAIL: {total_fail} Pass@1 mismatch(es) vs the paper "
+                  f"(MODELS_DATA={pass_mism}, ROBUSTNESS={r_mism}, THREE_BENCH={tb_mism}).")
         else:
-            print(f"\nOK: all 10 Pass@1 values reproduce the paper"
-                  + (f" ({tok_warn} model(s) differ on average token counts only — see REPRODUCE.md)." if tok_warn else "."))
-        sys.exit(1 if pass_mism else 0)
+            warns = []
+            if tok_warn: warns.append(f"{tok_warn} token-avg diff")
+            if tb_warn: warns.append(f"{tb_warn} unverified cell (Claude-Haiku LiveCodeBench)")
+            print("OK: all Pass@1 values across fig1/fig5/fig9 reproduce the paper"
+                  + (f" — warnings: {', '.join(warns)} (see REPRODUCE.md)." if warns else "."))
+        sys.exit(1 if total_fail else 0)
     out = RESULTS / "figure_data.json"
     out.write_text(json.dumps(data, indent=2, sort_keys=True))
     print(f"Wrote {out} ({len(data['MODELS_DATA'])} models)")

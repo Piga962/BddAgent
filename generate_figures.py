@@ -52,7 +52,7 @@ _PAPER_MODELS_DATA = {
 }
 
 # HumanEval+ robustness data (matches Table~\ref{tab:humanevalplus} in main.tex)
-ROBUSTNESS_DATA = {
+_PAPER_ROBUSTNESS_DATA = {
     'GPT-4o': {'bdd': 97.8, 'cot': 97.3, 'direct': 97.9},
     'GPT-5.3-codex': {'bdd': 98.6, 'cot': 97.3, 'direct': 98.5},
     'gpt-35-turbo': {'bdd': 97.9, 'cot': 97.5, 'direct': 97.4},
@@ -61,13 +61,16 @@ ROBUSTNESS_DATA = {
 }
 
 # Working copy actually used by the figures; seeded from the pristine paper
-# literals, then optionally overridden with results-derived numbers below.
+# literals, then optionally overridden with results-derived numbers. The override
+# for all three dicts is applied once, after THREE_BENCH_DATA is defined below.
 MODELS_DATA = {k: dict(v) for k, v in _PAPER_MODELS_DATA.items()}
+ROBUSTNESS_DATA = {k: dict(v) for k, v in _PAPER_ROBUSTNESS_DATA.items()}
 
-# Prefer numbers re-derived from the committed results/ (via build_figure_data.py)
-# over the transcribed literals above, so the figures reflect the actual data.
-# Falls back to the literals if results/figure_data.json is absent.
+
 def _apply_results_overrides():
+    """Override the working dicts with numbers re-derived from results/
+    (build_figure_data.py -> results/figure_data.json). Falls back to the paper
+    literals if that file is absent."""
     import json
     p = Path(__file__).parent / 'results' / 'figure_data.json'
     if not p.exists():
@@ -75,7 +78,12 @@ def _apply_results_overrides():
     data = json.loads(p.read_text())
     if data.get('MODELS_DATA'):
         MODELS_DATA.update(data['MODELS_DATA'])
-_apply_results_overrides()
+    if data.get('ROBUSTNESS_DATA'):
+        ROBUSTNESS_DATA.update(data['ROBUSTNESS_DATA'])
+    if data.get('THREE_BENCH_DATA'):
+        THREE_BENCH_DATA.update({k: {kk: (tuple(vv) if vv is not None else None)
+                                     for kk, vv in v.items()}
+                                 for k, v in data['THREE_BENCH_DATA'].items()})
 
 # Figures are written here. Defaults to a local ./figures/ dir so the package is
 # self-contained on a fresh clone; override with --out or the FIGURES_DIR env var.
@@ -436,7 +444,7 @@ LIVECODEBENCH_ERRORS = {
 
 # Per-model HumanEval / ClassEval / LiveCodeBench pass rates (TCGP, CoT, Direct).
 # Source: main paper Tables 4 and 7.
-THREE_BENCH_DATA = {
+_PAPER_THREE_BENCH_DATA = {
     'GPT-4o':            {'HumanEval': (81.7, 89.0, 86.0), 'ClassEval': (98, 99, 97), 'LiveCodeBench': (16, 2, 16)},
     'GPT-5.3-codex':     {'HumanEval': (86.6, 90.2, 81.7), 'ClassEval': (95, 95, 95), 'LiveCodeBench': (26, 4, 54)},
     'GPT-4.1':           {'HumanEval': (68.9, 66.5, 70.7), 'ClassEval': (95, 98, 95), 'LiveCodeBench': (38, 16, 16)},
@@ -446,6 +454,11 @@ THREE_BENCH_DATA = {
     'Gemini-3.1-Flash-Lite-Preview':  {'HumanEval': (29.3, 26.2, 28.0), 'ClassEval': (96, 97, 96), 'LiveCodeBench': (66, 60, 30)},
     'Gemini-2.5-Flash':  {'HumanEval': (23.2, 10.4, 16.5), 'ClassEval': (68, 69, 81), 'LiveCodeBench': None},
 }
+
+# Working copy + apply the results-derived overrides for all three dicts now that
+# every pristine literal (_PAPER_*) is defined.
+THREE_BENCH_DATA = {k: dict(v) for k, v in _PAPER_THREE_BENCH_DATA.items()}
+_apply_results_overrides()
 
 
 def fig8_token_exhaustion():
