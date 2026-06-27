@@ -24,6 +24,7 @@ summary_{model}_{YYYYMMDD}_{HHMMSS}.json         # per-run aggregate (pass@1, to
 | Directory | Benchmark | Paper artifact(s) |
 |-----------|-----------|-------------------|
 | `bdd_vs_cot/` | HumanEval (n=164) | `tab:humaneval`, `fig:multimodel`/`tab:bdd-vs-cot-multimodel`, `fig:heatmap`, `tab:costs`, and the derived `fig:bdd-cot`/`fig:cot-hurts`/`fig:tokens` |
+| `bdd_vs_cot_anthropic/` | HumanEval (n=164) | **Canonical Claude-Haiku / Claude-Sonnet runs** for the same artifacts (the Anthropic models' HumanEval runs live here, not in `bdd_vs_cot/`) |
 | `humaneval_plus/`, `evalplus/` | HumanEval+ | `fig:robustness` / `tab:humanevalplus` |
 | `classeval/` | ClassEval (n=100) | `fig:three-benchmarks` / `tab:task-difficulty` |
 | `livecodebench/` | LiveCodeBench (first 50) | `fig:three-benchmarks` / `tab:task-difficulty`, `fig:token-exhaustion` |
@@ -31,6 +32,14 @@ summary_{model}_{YYYYMMDD}_{HHMMSS}.json         # per-run aggregate (pass@1, to
 | `analysis_output/` | — | Intermediate analysis artifacts (error distributions, bootstrap) |
 | `EXPERIMENT_SUMMARY.md` | — | Human-readable run summary |
 
-Legacy/not-in-paper result sets (DevEval, early ablations, the superseded
-`bdd_vs_cot_anthropic` run) live under `archive/results-legacy/` and are not
+`results/figure_data.json` is the machine-generated bridge from these runs to the
+figures: `build_figure_data.py` pins the exact canonical run per model (the one
+whose pass counts reproduce the paper's Pass@1) and writes the numbers that
+`generate_figures.py` then plots. Run `python build_figure_data.py --check` to
+verify the committed answers still reproduce the paper (all 10 HumanEval Pass@1
+values match; GPT-5.3-codex average token counts differ by ~2%, which only
+affects the token-efficiency figure, not any Pass@1 result).
+
+Legacy/not-in-paper result sets (DevEval, early ablations) and the abandoned
+Plan-B partial Claude reruns live under `archive/results-legacy/` and are not
 shipped.

@@ -33,8 +33,12 @@ COLORS = {
     'threshold': '#C73E1D', # Red for threshold line
 }
 
-# Consolidated experimental data (all 10 models)
-MODELS_DATA = {
+# Consolidated experimental data (all 10 models), as reported in the paper.
+# This literal is the authoritative published record and is never mutated; the
+# working MODELS_DATA below is seeded from it and may be overridden by numbers
+# re-derived from results/ (see _apply_results_overrides). Keep both so the
+# cross-check in build_figure_data.py can compare results/ vs the paper.
+_PAPER_MODELS_DATA = {
     'GPT-4o': {'bdd': 81.7, 'cot': 89.0, 'direct': 86.0, 'bdd_tokens': 923, 'cot_tokens': 1667},
     'GPT-5.3-codex': {'bdd': 86.6, 'cot': 90.2, 'direct': 81.7, 'bdd_tokens': 870, 'cot_tokens': 1583},
     'Llama-3.3-70B': {'bdd': 76.8, 'cot': 80.5, 'direct': 76.8, 'bdd_tokens': 915, 'cot_tokens': 1545},
@@ -56,8 +60,28 @@ ROBUSTNESS_DATA = {
     'Gemini-2.5-Flash': {'bdd': 97.4, 'cot': 100.0, 'direct': 100.0},
 }
 
-OUTPUT_DIR = Path(__file__).parent.parent / 'diagrams'
-OUTPUT_DIR.mkdir(exist_ok=True)
+# Working copy actually used by the figures; seeded from the pristine paper
+# literals, then optionally overridden with results-derived numbers below.
+MODELS_DATA = {k: dict(v) for k, v in _PAPER_MODELS_DATA.items()}
+
+# Prefer numbers re-derived from the committed results/ (via build_figure_data.py)
+# over the transcribed literals above, so the figures reflect the actual data.
+# Falls back to the literals if results/figure_data.json is absent.
+def _apply_results_overrides():
+    import json
+    p = Path(__file__).parent / 'results' / 'figure_data.json'
+    if not p.exists():
+        return
+    data = json.loads(p.read_text())
+    if data.get('MODELS_DATA'):
+        MODELS_DATA.update(data['MODELS_DATA'])
+_apply_results_overrides()
+
+# Figures are written here. Defaults to a local ./figures/ dir so the package is
+# self-contained on a fresh clone; override with --out or the FIGURES_DIR env var.
+import os
+OUTPUT_DIR = Path(os.environ.get('FIGURES_DIR', Path(__file__).parent / 'figures'))
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def fig1_multimodel_comparison():
@@ -557,6 +581,14 @@ def print_latex_table():
 
 
 def main():
+    import argparse
+    global OUTPUT_DIR
+    parser = argparse.ArgumentParser(description="Generate paper figures into ./figures/ (or --out).")
+    parser.add_argument('--out', help="Output directory for figures (default: ./figures/).")
+    args = parser.parse_args()
+    if args.out:
+        OUTPUT_DIR = Path(args.out)
+        OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     print("Generating publication-quality figures...")
     print(f"Output directory: {OUTPUT_DIR}")
 

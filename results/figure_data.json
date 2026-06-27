@@ -1,0 +1,74 @@
+{
+  "MODELS_DATA": {
+    "Claude-Haiku-4.5": {
+      "bdd": 18.9,
+      "bdd_tokens": 1206,
+      "cot": 23.8,
+      "cot_tokens": 1642,
+      "direct": 19.5
+    },
+    "Claude-Sonnet-4": {
+      "bdd": 14.6,
+      "bdd_tokens": 1130,
+      "cot": 15.9,
+      "cot_tokens": 1747,
+      "direct": 6.7
+    },
+    "GPT-4.1": {
+      "bdd": 68.9,
+      "bdd_tokens": 855,
+      "cot": 66.5,
+      "cot_tokens": 1640,
+      "direct": 70.7
+    },
+    "GPT-4o": {
+      "bdd": 81.7,
+      "bdd_tokens": 923,
+      "cot": 89.0,
+      "cot_tokens": 1667,
+      "direct": 86.0
+    },
+    "GPT-5.3-codex": {
+      "bdd": 86.6,
+      "bdd_tokens": 849,
+      "cot": 90.2,
+      "cot_tokens": 1564,
+      "direct": 81.7
+    },
+    "Gemini-2.5-Flash": {
+      "bdd": 23.2,
+      "bdd_tokens": 311,
+      "cot": 10.4,
+      "cot_tokens": 297,
+      "direct": 16.5
+    },
+    "Gemini-3.1-Flash-Lite-Preview": {
+      "bdd": 29.3,
+      "bdd_tokens": 477,
+      "cot": 26.2,
+      "cot_tokens": 990,
+      "direct": 28.0
+    },
+    "Llama-3.3-70B": {
+      "bdd": 76.8,
+      "bdd_tokens": 915,
+      "cot": 80.5,
+      "cot_tokens": 1545,
+      "direct": 76.8
+    },
+    "codex-mini": {
+      "bdd": 14.6,
+      "bdd_tokens": 1713,
+      "cot": 12.2,
+      "cot_tokens": 1918,
+      "direct": 2.4
+    },
+    "gpt-35-turbo": {
+      "bdd": 86.6,
+      "bdd_tokens": 910,
+      "cot": 72.6,
+      "cot_tokens": 1652,
+      "direct": 70.1
+    }
+  }
+}
