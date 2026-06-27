@@ -1,0 +1,21 @@
+{
+  "model": "Llama-3.3-70B-Instruct",
+  "provider": "azure",
+  "n_problems": 164,
+  "seed": 200,
+  "timestamp": "20260401_145020",
+  "bdd": {
+    "passed": 125,
+    "pass_rate": 0.7621951219512195,
+    "ci_lower": 0.6915054964498925,
+    "ci_upper": 0.820882374018454
+  },
+  "no_bdd": {
+    "passed": 124,
+    "pass_rate": 0.7560975609756098,
+    "ci_lower": 0.6850034852906826,
+    "ci_upper": 0.8154683881900278
+  },
+  "difference": 0.0060975609756097615,
+  "cohens_d": 0.014260272209804152
+}

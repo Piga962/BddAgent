@@ -1,0 +1,44 @@
+{
+  "model": "gpt-5.3-codex",
+  "provider": "azure_responses",
+  "n_problems": 164,
+  "seed": 100,
+  "timestamp": "20260505_001927",
+  "conditions": {
+    "bdd": {
+      "passed": 0,
+      "pass_rate": 0.0,
+      "ci_lower": 0,
+      "ci_upper": 0.022888247013851153,
+      "avg_tokens": 0
+    },
+    "cot": {
+      "passed": 0,
+      "pass_rate": 0.0,
+      "ci_lower": 0,
+      "ci_upper": 0.022888247013851153,
+      "avg_tokens": 0
+    },
+    "direct": {
+      "passed": 0,
+      "pass_rate": 0.0,
+      "ci_lower": 0,
+      "ci_upper": 0.022888247013851153,
+      "avg_tokens": 0
+    }
+  },
+  "pairwise": {
+    "bdd_vs_cot": {
+      "difference": 0.0,
+      "cohens_d": 0.0
+    },
+    "bdd_vs_direct": {
+      "difference": 0.0,
+      "cohens_d": 0.0
+    },
+    "cot_vs_direct": {
+      "difference": 0.0,
+      "cohens_d": 0.0
+    }
+  }
+}

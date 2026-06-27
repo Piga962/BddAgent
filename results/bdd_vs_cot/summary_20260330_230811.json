@@ -1,0 +1,44 @@
+{
+  "model": "gemini-2.5-flash",
+  "provider": "gemini",
+  "n_problems": 164,
+  "seed": 42,
+  "timestamp": "20260330_230811",
+  "conditions": {
+    "bdd": {
+      "passed": 38,
+      "pass_rate": 0.23170731707317074,
+      "ci_lower": 0.1737212195036797,
+      "ci_upper": 0.301974913040338,
+      "avg_tokens": 310.7926829268293
+    },
+    "cot": {
+      "passed": 17,
+      "pass_rate": 0.10365853658536585,
+      "ci_lower": 0.06573095864846087,
+      "ci_upper": 0.15972923715520163,
+      "avg_tokens": 296.7987804878049
+    },
+    "direct": {
+      "passed": 27,
+      "pass_rate": 0.16463414634146342,
+      "ci_lower": 0.1156820442184203,
+      "ci_upper": 0.22893812146160183,
+      "avg_tokens": 141.83536585365854
+    }
+  },
+  "pairwise": {
+    "bdd_vs_cot": {
+      "difference": 0.12804878048780488,
+      "cohens_d": 0.3479043891314757
+    },
+    "bdd_vs_direct": {
+      "difference": 0.06707317073170732,
+      "cohens_d": 0.1688614763214515
+    },
+    "cot_vs_direct": {
+      "difference": -0.060975609756097573,
+      "cohens_d": -0.17963427763429216
+    }
+  }
+}

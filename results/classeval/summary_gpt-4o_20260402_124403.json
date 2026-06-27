@@ -1,0 +1,22 @@
+{
+  "model": "gpt-4o",
+  "timestamp": "20260402_124403",
+  "n_problems": 100,
+  "conditions": {
+    "bdd": {
+      "passed": 98,
+      "total": 100,
+      "pass_rate": 0.98
+    },
+    "cot": {
+      "passed": 99,
+      "total": 100,
+      "pass_rate": 0.99
+    },
+    "direct": {
+      "passed": 97,
+      "total": 100,
+      "pass_rate": 0.97
+    }
+  }
+}

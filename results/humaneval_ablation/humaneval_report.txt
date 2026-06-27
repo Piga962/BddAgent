@@ -1,0 +1,57 @@
+
+================================================================================
+HUMANEVAL ABLATION STUDY: BDD vs NO-BDD CODE GENERATION
+================================================================================
+
+EXPERIMENT DETAILS
+------------------
+Model:                  Gemini 2.5 Flash
+Benchmark:              HumanEval (164 problems per seed)
+Number of Seeds:        2
+Total Evaluations:      328
+Timestamp:              2026-03-30T22:49:35.115897
+
+AGGREGATED RESULTS
+------------------
+                        Pass@1          95% CI              Passed/Total
+--------------------------------------------------------------------------------
+Without BDD               4.9%          [3.0%, 7.8%]       16/328
+With BDD                 17.1%          [13.4%, 21.5%]       56/328
+--------------------------------------------------------------------------------
+
+STATISTICAL ANALYSIS
+--------------------
+Absolute Improvement:   +12.2%
+Relative Improvement:   +250%
+Cohen's d:              0.398 (small effect)
+
+Note: The 95% confidence intervals do NOT overlap, suggesting the improvement
+is statistically meaningful. The BDD condition's lower CI bound (13.4%)
+exceeds the no-BDD condition's upper CI bound (7.8%).
+
+PER-SEED CONSISTENCY
+--------------------
+Seed       BDD          No-BDD       Difference  
+--------------------------------------------------
+42          16.5%         3.7%       +12.8%
+200         17.7%         6.1%       +11.6%
+
+KEY FINDINGS
+------------
+1. BDD integration improves HumanEval Pass@1 by +12.2% absolute
+   (250% relative improvement)
+
+2. The improvement is consistent across all tested seeds (range:
+   +11.6% to +12.8%)
+
+3. Effect size (Cohen's d = 0.40) indicates a small practical effect
+
+4. Non-overlapping 95% CIs suggest statistical significance
+
+IMPLICATIONS FOR PAPER
+----------------------
+These results support the hypothesis that BDD-guided prompting improves LLM
+code generation quality. The +250% relative improvement on HumanEval
+complements the DevEval findings showing +14.7% improvement on complex tasks.
+
+================================================================================

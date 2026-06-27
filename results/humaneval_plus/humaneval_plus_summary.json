@@ -1,0 +1,28 @@
+{
+  "gemini-2.5-flash": {
+    "bdd": {
+      "base_passed": 19,
+      "plus_passed": 19,
+      "total": 164,
+      "base_rate": 0.11585365853658537,
+      "plus_rate": 0.11585365853658537,
+      "drop": 0.0
+    },
+    "cot": {
+      "base_passed": 17,
+      "plus_passed": 17,
+      "total": 164,
+      "base_rate": 0.10365853658536585,
+      "plus_rate": 0.10365853658536585,
+      "drop": 0.0
+    },
+    "direct": {
+      "base_passed": 17,
+      "plus_passed": 17,
+      "total": 164,
+      "base_rate": 0.10365853658536585,
+      "plus_rate": 0.10365853658536585,
+      "drop": 0.0
+    }
+  }
+}

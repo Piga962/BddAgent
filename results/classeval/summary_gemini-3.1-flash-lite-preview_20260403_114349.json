@@ -1,0 +1,22 @@
+{
+  "model": "gemini-3.1-flash-lite-preview",
+  "timestamp": "20260403_114349",
+  "n_problems": 68,
+  "conditions": {
+    "bdd": {
+      "passed": 65,
+      "total": 68,
+      "pass_rate": 0.9558823529411765
+    },
+    "cot": {
+      "passed": 66,
+      "total": 68,
+      "pass_rate": 0.9705882352941176
+    },
+    "direct": {
+      "passed": 65,
+      "total": 68,
+      "pass_rate": 0.9558823529411765
+    }
+  }
+}

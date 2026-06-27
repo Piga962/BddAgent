@@ -1,0 +1,13 @@
+{"task_id": "ClassEval_0", "class_name": "AccessGatewayFilter", "condition": "direct", "passed": false, "generated_code": "", "tokens_used": 4333, "duration_seconds": 35.86372494697571, "error": null}
+{"task_id": "ClassEval_1", "class_name": "AreaCalculator", "condition": "direct", "passed": false, "generated_code": "", "tokens_used": 1573, "duration_seconds": 9.671315908432007, "error": null}
+{"task_id": "ClassEval_2", "class_name": "ArgumentParser", "condition": "direct", "passed": false, "generated_code": "", "tokens_used": 4272, "duration_seconds": 29.507474899291992, "error": null}
+{"task_id": "ClassEval_3", "class_name": "ArrangementCalculator", "condition": "direct", "passed": false, "generated_code": "", "tokens_used": 3502, "duration_seconds": 24.057489156723022, "error": null}
+{"task_id": "ClassEval_4", "class_name": "AssessmentSystem", "condition": "direct", "passed": false, "generated_code": "", "tokens_used": 2367, "duration_seconds": 14.624319076538086, "error": null}
+{"task_id": "ClassEval_5", "class_name": "AutomaticGuitarSimulator", "condition": "direct", "passed": false, "generated_code": "", "tokens_used": 1986, "duration_seconds": 14.097368717193604, "error": null}
+{"task_id": "ClassEval_6", "class_name": "AvgPartition", "condition": "direct", "passed": false, "generated_code": "", "tokens_used": 1857, "duration_seconds": 13.274807929992676, "error": null}
+{"task_id": "ClassEval_7", "class_name": "BalancedBrackets", "condition": "direct", "passed": false, "generated_code": "", "tokens_used": 1098, "duration_seconds": 8.45094609260559, "error": null}
+{"task_id": "ClassEval_8", "class_name": "BankAccount", "condition": "direct", "passed": false, "generated_code": "", "tokens_used": 2558, "duration_seconds": 18.842944145202637, "error": null}
+{"task_id": "ClassEval_9", "class_name": "BigNumCalculator", "condition": "direct", "passed": false, "generated_code": "", "tokens_used": 787, "duration_seconds": 4.567816972732544, "error": null}
+{"task_id": "ClassEval_10", "class_name": "BinaryDataProcessor", "condition": "direct", "passed": false, "generated_code": "", "tokens_used": 662, "duration_seconds": 3.21995210647583, "error": null}
+{"task_id": "ClassEval_11", "class_name": "BitStatusUtil", "condition": "direct", "passed": false, "generated_code": "", "tokens_used": 1695, "duration_seconds": 11.131589889526367, "error": null}
+{"task_id": "ClassEval_12", "class_name": "BlackjackGame", "condition": "direct", "passed": false, "generated_code": "", "tokens_used": 2021, "duration_seconds": 10.6925790309906, "error": null}

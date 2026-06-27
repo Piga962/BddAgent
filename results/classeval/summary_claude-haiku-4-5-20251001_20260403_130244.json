@@ -1,0 +1,22 @@
+{
+  "model": "claude-haiku-4-5-20251001",
+  "timestamp": "20260403_130244",
+  "n_problems": 61,
+  "conditions": {
+    "bdd": {
+      "passed": 58,
+      "total": 61,
+      "pass_rate": 0.9508196721311475
+    },
+    "cot": {
+      "passed": 58,
+      "total": 61,
+      "pass_rate": 0.9508196721311475
+    },
+    "direct": {
+      "passed": 58,
+      "total": 61,
+      "pass_rate": 0.9508196721311475
+    }
+  }
+}

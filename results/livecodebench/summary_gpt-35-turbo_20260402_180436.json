@@ -1,0 +1,23 @@
+{
+  "model": "gpt-35-turbo",
+  "provider": "azure",
+  "timestamp": "20260402_180436",
+  "n_problems": 50,
+  "conditions": {
+    "bdd": {
+      "passed": 15,
+      "total": 50,
+      "pass_rate": 0.3
+    },
+    "cot": {
+      "passed": 12,
+      "total": 50,
+      "pass_rate": 0.24
+    },
+    "direct": {
+      "passed": 11,
+      "total": 50,
+      "pass_rate": 0.22
+    }
+  }
+}

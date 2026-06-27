@@ -1,0 +1,374 @@
+[
+  {
+    "model": "gpt-4o",
+    "n_problems": 50,
+    "cot_pass_rate": 0.02,
+    "direct_pass_rate": 0.16,
+    "bdd_pass_rate": 0.16,
+    "cot_error_distribution": {
+      "NO_OUTPUT": 37,
+      "WRONG_ANSWER": 8,
+      "OTHER_ERROR": 4,
+      "PASSED": 1
+    },
+    "direct_error_distribution": {
+      "PASSED": 8,
+      "NO_OUTPUT": 16,
+      "WRONG_ANSWER": 10,
+      "OTHER_ERROR": 16
+    },
+    "bdd_error_distribution": {
+      "PASSED": 8,
+      "NO_OUTPUT": 10,
+      "WRONG_ANSWER": 13,
+      "OTHER_ERROR": 19
+    },
+    "cot_tokens": {
+      "mean": 1623.6,
+      "std": 269.7017612104155,
+      "max": 2162,
+      "min": 892,
+      "passed_mean": 1420.0,
+      "failed_mean": 1627.7551020408164
+    },
+    "direct_tokens": {
+      "mean": 719.46,
+      "std": 202.0456591961332,
+      "max": 1208,
+      "min": 276,
+      "passed_mean": 589.625,
+      "failed_mean": 744.1904761904761
+    },
+    "catastrophe_examples": [
+      {
+        "question_id": "1873_A",
+        "title": "A. Short Sort",
+        "difficulty": "easy",
+        "cot_error": "NO_OUTPUT",
+        "cot_tokens": 1654,
+        "direct_tokens": 660,
+        "cot_code_preview": "# Solution\ndef solve():\n    import sys\n    input = sys.stdin.read\n    data = input().split()\n    \n    t = int(data[0])  # Number of test cases\n    test_cases = data[1:]  # List of strings\n    \n    target = \"abc\"\n    results = []\n    \n    for s in test_cases:\n        # Count mismatched positions\n        mismatch_count = sum(1 for i in range(3) if s[i] != target[i])\n        \n        # If mismatch_count is 0 or 2, we can fix it with at most one swap\n        if mismatch_count == 0 or mismatch_count ",
+        "direct_code_preview": "def can_be_abc_with_one_swap(t, test_cases):\n    results = []\n    target = \"abc\"\n    \n    for s in test_cases:\n        # Count mismatches between the current string and the target\n        mismatches = sum(1 for i in range(3) if s[i] != target[i])\n        \n        # If there are 0 mismatches (already \"abc\") or 2 mismatches (can swap two cards to fix),\n        # then it's possible to make \"abc\" with at most one swap.\n        if mismatches == 0 or mismatches == 2:\n            results.append(\"YES\")\n"
+      },
+      {
+        "question_id": "1873_B",
+        "title": "B. Good Kid",
+        "difficulty": "easy",
+        "cot_error": "WRONG_ANSWER",
+        "cot_tokens": 1570,
+        "direct_tokens": 575,
+        "cot_code_preview": "def max_product_after_increment(t, test_cases):\n    results = []\n    \n    for case in test_cases:\n        n, digits = case\n        max_product = 0\n        \n        # Compute the base product of all digits\n        base_product = 1\n        for digit in digits:\n            base_product *= digit\n        \n        # Try adding 1 to each digit and compute the new product\n        for i in range(n):\n            original_digit = digits[i]\n            \n            # Compute the new product\n            if o",
+        "direct_code_preview": "def max_product_after_increment(t, test_cases):\n    results = []\n    for case in test_cases:\n        n, digits = case\n        max_product = 0\n        for i in range(n):\n            # Create a copy of the digits array\n            modified_digits = digits[:]\n            # Increment the current digit by 1\n            modified_digits[i] += 1\n            # Calculate the product of the modified array\n            product = 1\n            for digit in modified_digits:\n                product *= digit\n   "
+      },
+      {
+        "question_id": "2728",
+        "title": "sum-in-a-matrix",
+        "difficulty": "medium",
+        "cot_error": "NO_OUTPUT",
+        "cot_tokens": 1479,
+        "direct_tokens": 560,
+        "cot_code_preview": "from typing import List\n\nclass Solution:\n    def matrixSum(self, nums: List[List[int]]) -> int:\n        # Step 1: Sort each row in descending order\n        for row in nums:\n            row.sort(reverse=True)\n        \n        # Step 2: Initialize score\n        score = 0\n        \n        # Step 3: Process the matrix column by column\n        while nums:\n            # Find the maximum value from the first elements of each row\n            max_in_column = max(row[0] for row in nums)\n            score ",
+        "direct_code_preview": "from typing import List\n\nclass Solution:\n    def matrixSum(self, nums: List[List[int]]) -> int:\n        # Sort each row in descending order\n        for row in nums:\n            row.sort(reverse=True)\n        \n        score = 0\n        # Perform operations until the matrix becomes empty\n        while nums[0]:  # While there are elements in the rows\n            max_in_step = 0\n            # Remove the largest number from each row and find the maximum\n            for row in nums:\n                ma"
+      },
+      {
+        "question_id": "2811",
+        "title": "determine-the-minimum-sum-of-a-k-avoiding-array",
+        "difficulty": "medium",
+        "cot_error": "NO_OUTPUT",
+        "cot_tokens": 1392,
+        "direct_tokens": 425,
+        "cot_code_preview": "class Solution:\n    def minimumSum(self, n: int, k: int) -> int:\n        result = []\n        current = 1  # Start with the smallest positive integer\n        \n        while len(result) < n:\n            # Check if adding `current` would cause a pair to sum to `k`\n            if all(current + x != k for x in result):\n                result.append(current)\n            current += 1  # Move to the next integer\n        \n        return sum(result)",
+        "direct_code_preview": "class Solution:\n    def minimumSum(self, n: int, k: int) -> int:\n        result = []\n        current = 1\n        \n        while len(result) < n:\n            # Check if the current number can be added to the array\n            # without violating the k-avoiding condition\n            if all(current + x != k for x in result):\n                result.append(current)\n            current += 1\n        \n        return sum(result)\n\n# Example usage:\nif __name__ == \"__main__\":\n    import sys\n    input = sys."
+      },
+      {
+        "question_id": "2812",
+        "title": "find-the-maximum-achievable-number",
+        "difficulty": "easy",
+        "cot_error": "NO_OUTPUT",
+        "cot_tokens": 999,
+        "direct_tokens": 516,
+        "cot_code_preview": "class Solution:\n    def theMaximumAchievableX(self, num: int, t: int) -> int:\n        # Compute the maximum achievable number\n        return num + 2 * t",
+        "direct_code_preview": "class Solution:\n    def theMaximumAchievableX(self, num: int, t: int) -> int:\n        # The maximum achievable number x is simply num + 2 * t\n        # because in each operation, x can increase by 1 and num can increase by 1.\n        # This means the difference between x and num can increase by 2 per operation.\n        return num + 2 * t\n\n# Example usage:\nif __name__ == \"__main__\":\n    # Read input\n    num = int(input())\n    t = int(input())\n    \n    # Create an instance of the solution\n    solu"
+      }
+    ]
+  },
+  {
+    "model": "gpt-5.3-codex",
+    "n_problems": 50,
+    "cot_pass_rate": 0.04,
+    "direct_pass_rate": 0.54,
+    "bdd_pass_rate": 0.26,
+    "cot_error_distribution": {
+      "PASSED": 2,
+      "OTHER_ERROR": 48
+    },
+    "direct_error_distribution": {
+      "PASSED": 27,
+      "OTHER_ERROR": 16,
+      "WRONG_ANSWER": 7
+    },
+    "bdd_error_distribution": {
+      "PASSED": 13,
+      "OTHER_ERROR": 31,
+      "WRONG_ANSWER": 6
+    },
+    "cot_tokens": {
+      "mean": 836.38,
+      "std": 248.3198654960976,
+      "max": 1430,
+      "min": 369,
+      "passed_mean": 1013.0,
+      "failed_mean": 829.0208333333334
+    },
+    "direct_tokens": {
+      "mean": 780.18,
+      "std": 252.9468473810259,
+      "max": 1436,
+      "min": 309,
+      "passed_mean": 760.3333333333334,
+      "failed_mean": 803.4782608695652
+    },
+    "catastrophe_examples": [
+      {
+        "question_id": "1873_B",
+        "title": "B. Good Kid",
+        "difficulty": "easy",
+        "cot_error": "OTHER_ERROR",
+        "cot_tokens": 585,
+        "direct_tokens": 496,
+        "cot_code_preview": "",
+        "direct_code_preview": "import sys\n\ndef solve():\n    data = list(map(int, sys.stdin.read().strip().split()))\n    t = data[0]\n    idx = 1\n    out = []\n\n    for _ in range(t):\n        n = data[idx]\n        idx += 1\n        a = data[idx:idx + n]\n        idx += n\n\n        best = -1\n        for i in range(n):\n            prod = 1\n            for j in range(n):\n                if i == j:\n                    prod *= (a[j] + 1)\n                else:\n                    prod *= a[j]\n            if prod > best:\n                b"
+      },
+      {
+        "question_id": "1873_D",
+        "title": "D. 1D Eraser",
+        "difficulty": "easy",
+        "cot_error": "OTHER_ERROR",
+        "cot_tokens": 777,
+        "direct_tokens": 700,
+        "cot_code_preview": "",
+        "direct_code_preview": "import sys\n\ndef solve():\n    data = sys.stdin.read().strip().split()\n    t = int(data[0])\n    idx = 1\n    out = []\n\n    for _ in range(t):\n        n = int(data[idx]); k = int(data[idx + 1])\n        idx += 2\n        s = data[idx]\n        idx += 1\n\n        ops = 0\n        i = 0\n        while i < n:\n            if s[i] == 'B':\n                ops += 1\n                i += k\n            else:\n                i += 1\n\n        out.append(str(ops))\n\n    sys.stdout.write(\"\\n\".join(out))\n\nif __name__ == \""
+      },
+      {
+        "question_id": "1883_B",
+        "title": "B. Chemistry",
+        "difficulty": "medium",
+        "cot_error": "OTHER_ERROR",
+        "cot_tokens": 1373,
+        "direct_tokens": 1145,
+        "cot_code_preview": "",
+        "direct_code_preview": "import sys\n\ndef can_make_palindrome_after_k_deletions(s: str, k: int) -> bool:\n    # Count frequencies of 26 lowercase letters\n    freq = [0] * 26\n    for ch in s:\n        freq[ord(ch) - 97] += 1\n\n    # Number of characters with odd frequency\n    odd = sum(c & 1 for c in freq)\n\n    m = len(s) - k  # remaining length after exactly k deletions\n\n    # For a string of length m to be rearranged into palindrome:\n    # required odd count in final multiset <= m % 2\n    # We can adjust odd count by delet"
+      },
+      {
+        "question_id": "1899_A",
+        "title": "A. Game with Integers",
+        "difficulty": "easy",
+        "cot_error": "OTHER_ERROR",
+        "cot_tokens": 558,
+        "direct_tokens": 508,
+        "cot_code_preview": "",
+        "direct_code_preview": "import sys\n\ndef winner(n: int) -> str:\n    # Vanya wins immediately only if after his move number is divisible by 3.\n    # Considering optimal play and up to 10 moves total:\n    # If n % 3 == 0, Vanya cannot win on his first move (goes to 1 or 2 mod 3),\n    # and Vova can always respond to keep Vanya from ever landing on 0 mod 3\n    # on his turns within the limit. So Vova wins.\n    # Otherwise, Vanya can move +/-1 to make it divisible by 3 on his first move.\n    return \"Second\" if n % 3 == 0 el"
+      },
+      {
+        "question_id": "1899_B",
+        "title": "B. 250 Thousand Tons of TNT",
+        "difficulty": "hard",
+        "cot_error": "OTHER_ERROR",
+        "cot_tokens": 1225,
+        "direct_tokens": 1163,
+        "cot_code_preview": "",
+        "direct_code_preview": "import sys\n\ndef solve():\n    data = sys.stdin.buffer.read().split()\n    t = int(data[0])\n    idx = 1\n    out = []\n\n    for _ in range(t):\n        n = int(data[idx])\n        idx += 1\n        a = list(map(int, data[idx:idx + n]))\n        idx += n\n\n        # Prefix sums for O(1) segment sum queries\n        pref = [0] * (n + 1)\n        s = 0\n        for i, v in enumerate(a, 1):\n            s += v\n            pref[i] = s\n\n        ans = 0\n\n        # Only k that divide n are valid\n        # For each su"
+      }
+    ]
+  },
+  {
+    "model": "gpt-35-turbo",
+    "n_problems": 50,
+    "cot_pass_rate": 0.24,
+    "direct_pass_rate": 0.22,
+    "bdd_pass_rate": 0.3,
+    "cot_error_distribution": {
+      "PASSED": 12,
+      "WRONG_ANSWER": 11,
+      "OTHER_ERROR": 25,
+      "NO_OUTPUT": 2
+    },
+    "direct_error_distribution": {
+      "PASSED": 11,
+      "WRONG_ANSWER": 8,
+      "OTHER_ERROR": 25,
+      "NO_OUTPUT": 6
+    },
+    "bdd_error_distribution": {
+      "PASSED": 15,
+      "WRONG_ANSWER": 10,
+      "NO_OUTPUT": 2,
+      "OTHER_ERROR": 23
+    },
+    "cot_tokens": {
+      "mean": 1272.38,
+      "std": 905.4967893924306,
+      "max": 4559,
+      "min": 355,
+      "passed_mean": 1183.1666666666667,
+      "failed_mean": 1300.5526315789473
+    },
+    "direct_tokens": {
+      "mean": 893.92,
+      "std": 531.1281141118402,
+      "max": 3131,
+      "min": 265,
+      "passed_mean": 848.2727272727273,
+      "failed_mean": 906.7948717948718
+    },
+    "catastrophe_examples": [
+      {
+        "question_id": "1899_D",
+        "title": "D. Yarik and Musical Notes",
+        "difficulty": "hard",
+        "cot_error": "WRONG_ANSWER",
+        "cot_tokens": 1604,
+        "direct_tokens": 1547,
+        "cot_code_preview": "import sys\ninput = sys.stdin.readline\n\nt = int(input())\nfor _ in range(t):\n    n = int(input())\n    a = list(map(int, input().split()))\n    \n    freq = {}\n    for x in a:\n        freq[x] = freq.get(x, 0) + 1\n    \n    ans = 0\n    for c in freq.values():\n        ans += c * (c - 1) // 2\n    \n    print(ans)",
+        "direct_code_preview": "import sys\ninput = sys.stdin.readline\n\n# We want to count pairs (i, j) with i < j such that:\n# (b_i)^(b_j) = (b_j)^(b_i)\n# Given b_i = 2^{a_i}, b_j = 2^{a_j}\n# So:\n# (2^{a_i})^{2^{a_j}} = (2^{a_j})^{2^{a_i}}\n# => 2^{a_i * 2^{a_j}} = 2^{a_j * 2^{a_i}}\n# => a_i * 2^{a_j} = a_j * 2^{a_i}\n\n# We want to find pairs (a_i, a_j) with i<j such that:\n# a_i * 2^{a_j} = a_j * 2^{a_i}\n\n# Let's analyze the equation:\n\n# If a_i = a_j, then obviously equality holds:\n# a_i * 2^{a_i} = a_i * 2^{a_i}\n\n# What about a"
+      },
+      {
+        "question_id": "2791",
+        "title": "find-the-losers-of-the-circular-game",
+        "difficulty": "easy",
+        "cot_error": "OTHER_ERROR",
+        "cot_tokens": 1265,
+        "direct_tokens": 793,
+        "cot_code_preview": "from typing import List\n\nclass Solution:\n    def circularGameLosers(self, n: int, k: int) -> List[int]:\n        visited = set()\n        current = 1\n        visited.add(current)\n        i = 1\n        \n        while True:\n            # Calculate next friend\n            current = (current + i * k - 1) % n + 1\n            if current in visited:\n                break\n            visited.add(current)\n            i += 1\n        \n        # Losers are those who never received the ball\n        losers = [f",
+        "direct_code_preview": "from typing import List\n\nclass Solution:\n    def circularGameLosers(self, n: int, k: int) -> List[int]:\n        visited = [False] * n\n        current = 0  # 0-based index for friend 1\n        visited[current] = True\n        step = 1\n        \n        while True:\n            current = (current + step * k) % n\n            if visited[current]:\n                break\n            visited[current] = True\n            step += 1\n        \n        # Friends who never received the ball are losers\n        lose"
+      }
+    ]
+  },
+  {
+    "model": "gpt-4.1",
+    "n_problems": 50,
+    "cot_pass_rate": 0.16,
+    "direct_pass_rate": 0.16,
+    "bdd_pass_rate": 0.38,
+    "cot_error_distribution": {
+      "PASSED": 8,
+      "WRONG_ANSWER": 7,
+      "NO_OUTPUT": 33,
+      "OTHER_ERROR": 2
+    },
+    "direct_error_distribution": {
+      "PASSED": 8,
+      "WRONG_ANSWER": 10,
+      "NO_OUTPUT": 20,
+      "OTHER_ERROR": 12
+    },
+    "bdd_error_distribution": {
+      "PASSED": 19,
+      "NO_OUTPUT": 14,
+      "WRONG_ANSWER": 11,
+      "RUNTIME_ERROR": 1,
+      "OTHER_ERROR": 5
+    },
+    "cot_tokens": {
+      "mean": 1156.1,
+      "std": 452.91240875030127,
+      "max": 3062,
+      "min": 337,
+      "passed_mean": 1365.25,
+      "failed_mean": 1116.2619047619048
+    },
+    "direct_tokens": {
+      "mean": 716.26,
+      "std": 253.6624378972969,
+      "max": 1698,
+      "min": 245,
+      "passed_mean": 645.0,
+      "failed_mean": 729.8333333333334
+    },
+    "catastrophe_examples": [
+      {
+        "question_id": "2727",
+        "title": "number-of-senior-citizens",
+        "difficulty": "easy",
+        "cot_error": "WRONG_ANSWER",
+        "cot_tokens": 897,
+        "direct_tokens": 511,
+        "cot_code_preview": "from typing import List\n\nclass Solution:\n    def countSeniors(self, details: List[str]) -> int:\n        count = 0\n        for detail in details:\n            age = int(detail[11:13])\n            if age > 60:\n                count += 1\n        return count\n\n# Example usage:\nif __name__ == \"__main__\":\n    details1 = [\"7868190130M7522\",\"5303914400F9211\",\"9273338290F4010\"]\n    details2 = [\"1313579440F2036\",\"2921522980M5644\"]\n    sol = Solution()\n    print(sol.countSeniors(details1))  # Output: 2\n    ",
+        "direct_code_preview": "class Solution:\n    def countSeniors(self, details: list[str]) -> int:\n        count = 0\n        for s in details:\n            age = int(s[11:13])\n            if age > 60:\n                count += 1\n        return count\n\n# For testing with stdin/stdout\nif __name__ == \"__main__\":\n    import sys\n    details = []\n    for line in sys.stdin:\n        line = line.strip()\n        if line:\n            if line.startswith('[') and line.endswith(']'):\n                # Parse as list\n                import a"
+      },
+      {
+        "question_id": "2728",
+        "title": "sum-in-a-matrix",
+        "difficulty": "medium",
+        "cot_error": "NO_OUTPUT",
+        "cot_tokens": 982,
+        "direct_tokens": 516,
+        "cot_code_preview": "from typing import List\n\nclass Solution:\n    def matrixSum(self, nums: List[List[int]]) -> int:\n        # Sort each row in descending order\n        for row in nums:\n            row.sort(reverse=True)\n        \n        m = len(nums)\n        n = max(len(row) for row in nums)\n        score = 0\n        \n        # For each column index\n        for col in range(n):\n            max_in_col = 0\n            for row in nums:\n                if col < len(row):\n                    max_in_col = max(max_in_col,",
+        "direct_code_preview": "import sys\nimport threading\n\ndef main():\n    import sys\n\n    # Read input\n    import ast\n    nums = ast.literal_eval(sys.stdin.readline().strip())\n\n    # Sort each row in descending order\n    for row in nums:\n        row.sort(reverse=True)\n\n    m = len(nums)\n    n = len(nums[0])\n\n    score = 0\n\n    # For each column (since after sorting, largest leftmost)\n    for col in range(n):\n        max_val = 0\n        for row in range(m):\n            max_val = max(max_val, nums[row][col])\n        score += "
+      },
+      {
+        "question_id": "2802",
+        "title": "find-the-punishment-number-of-an-integer",
+        "difficulty": "medium",
+        "cot_error": "NO_OUTPUT",
+        "cot_tokens": 738,
+        "direct_tokens": 628,
+        "cot_code_preview": "class Solution:\n    def punishmentNumber(self, n: int) -> int:\n        # Helper function to check if s can be partitioned into contiguous substrings that sum to target\n        def can_partition(s, target):\n            # Use recursion with memoization\n            memo = {}\n            def dfs(pos, curr_sum):\n                if (pos, curr_sum) in memo:\n                    return memo[(pos, curr_sum)]\n                if pos == len(s):\n                    return curr_sum == target\n                # ",
+        "direct_code_preview": "class Solution:\n    def punishmentNumber(self, n: int) -> int:\n        # Helper function to check if s can be partitioned to sum to target\n        def can_partition(s, target):\n            # Try all possible partitions recursively\n            def dfs(pos, curr_sum):\n                if pos == len(s):\n                    return curr_sum == target\n                for l in range(1, len(s) - pos + 1):\n                    num = int(s[pos:pos + l])\n                    if dfs(pos + l, curr_sum + num):\n "
+      }
+    ]
+  },
+  {
+    "model": "gemini-3.1-flash-lite-preview",
+    "n_problems": 50,
+    "cot_pass_rate": 0.6,
+    "direct_pass_rate": 0.3,
+    "bdd_pass_rate": 0.66,
+    "cot_error_distribution": {
+      "PASSED": 30,
+      "WRONG_ANSWER": 6,
+      "OTHER_ERROR": 4,
+      "NO_OUTPUT": 10
+    },
+    "direct_error_distribution": {
+      "PASSED": 15,
+      "OTHER_ERROR": 11,
+      "NO_OUTPUT": 19,
+      "WRONG_ANSWER": 5
+    },
+    "bdd_error_distribution": {
+      "PASSED": 33,
+      "NO_OUTPUT": 8,
+      "WRONG_ANSWER": 5,
+      "OTHER_ERROR": 4
+    },
+    "cot_tokens": {
+      "mean": 1221.72,
+      "std": 246.28999492468222,
+      "max": 1973,
+      "min": 735,
+      "passed_mean": 1177.7,
+      "failed_mean": 1287.75
+    },
+    "direct_tokens": {
+      "mean": 910.66,
+      "std": 291.8999561493629,
+      "max": 1643,
+      "min": 364,
+      "passed_mean": 991.6666666666666,
+      "failed_mean": 875.9428571428572
+    },
+    "catastrophe_examples": [
+      {
+        "question_id": "2850",
+        "title": "construct-the-longest-new-string",
+        "difficulty": "medium",
+        "cot_error": "WRONG_ANSWER",
+        "cot_tokens": 1135,
+        "direct_tokens": 1004,
+        "cot_code_preview": "import sys\n\nclass Solution:\n    def longestString(self, x: int, y: int, z: int) -> int:\n        \"\"\"\n        To avoid \"AAA\" and \"BBB\", we can think of the structure as alternating \n        between blocks of A's and B's.\n        \n        The \"AB\" strings act as bridges. We can place all z \"AB\" strings in a row:\n        \"AB\" + \"AB\" + ... + \"AB\"\n        This creates a sequence: A B A B A B ... A B\n        \n        We can insert \"AA\" blocks into the A positions and \"BB\" blocks into the B positions.\n ",
+        "direct_code_preview": "class Solution:\n    def longestString(self, x: int, y: int, z: int) -> int:\n        \"\"\"\n        We have x \"AA\" strings, y \"BB\" strings, and z \"AB\" strings.\n        We want to avoid \"AAA\" and \"BBB\".\n        \n        The \"AB\" strings act as separators. If we have z \"AB\" strings, we can arrange them as:\n        \"AB\" + \"AB\" + ... + \"AB\" (z times).\n        This creates z+1 slots where we can place \"AA\" and \"BB\" blocks.\n        \n        Let's denote the sequence of \"AB\"s as:\n        (slot0) AB (slot1)"
+      }
+    ]
+  }
+]

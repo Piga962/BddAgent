@@ -1,0 +1,14 @@
+{"task_id": "ClassEval_0", "class_name": "AccessGatewayFilter", "condition": "cot", "passed": false, "generated_code": "", "tokens_used": 2887, "duration_seconds": 19.686581134796143, "error": null}
+{"task_id": "ClassEval_1", "class_name": "AreaCalculator", "condition": "cot", "passed": false, "generated_code": "", "tokens_used": 2882, "duration_seconds": 20.461076974868774, "error": null}
+{"task_id": "ClassEval_2", "class_name": "ArgumentParser", "condition": "cot", "passed": false, "generated_code": "", "tokens_used": 7602, "duration_seconds": 58.27656078338623, "error": null}
+{"task_id": "ClassEval_3", "class_name": "ArrangementCalculator", "condition": "cot", "passed": false, "generated_code": "", "tokens_used": 3936, "duration_seconds": 27.673410177230835, "error": null}
+{"task_id": "ClassEval_4", "class_name": "AssessmentSystem", "condition": "cot", "passed": false, "generated_code": "", "tokens_used": 3691, "duration_seconds": 24.295810222625732, "error": null}
+{"task_id": "ClassEval_5", "class_name": "AutomaticGuitarSimulator", "condition": "cot", "passed": false, "generated_code": "", "tokens_used": 2724, "duration_seconds": 19.63961911201477, "error": null}
+{"task_id": "ClassEval_6", "class_name": "AvgPartition", "condition": "cot", "passed": false, "generated_code": "", "tokens_used": 3114, "duration_seconds": 25.282105684280396, "error": null}
+{"task_id": "ClassEval_7", "class_name": "BalancedBrackets", "condition": "cot", "passed": false, "generated_code": "", "tokens_used": 2140, "duration_seconds": 15.149240732192993, "error": null}
+{"task_id": "ClassEval_8", "class_name": "BankAccount", "condition": "cot", "passed": false, "generated_code": "", "tokens_used": 3557, "duration_seconds": 25.958096027374268, "error": null}
+{"task_id": "ClassEval_9", "class_name": "BigNumCalculator", "condition": "cot", "passed": false, "generated_code": "", "tokens_used": 5890, "duration_seconds": 46.995173931121826, "error": null}
+{"task_id": "ClassEval_10", "class_name": "BinaryDataProcessor", "condition": "cot", "passed": false, "generated_code": "", "tokens_used": 2806, "duration_seconds": 19.076024770736694, "error": null}
+{"task_id": "ClassEval_11", "class_name": "BitStatusUtil", "condition": "cot", "passed": false, "generated_code": "", "tokens_used": 2271, "duration_seconds": 15.569865942001343, "error": null}
+{"task_id": "ClassEval_12", "class_name": "BlackjackGame", "condition": "cot", "passed": false, "generated_code": "", "tokens_used": 4070, "duration_seconds": 27.058712005615234, "error": null}
+{"task_id": "ClassEval_13", "class_name": "BookManagement", "condition": "cot", "passed": false, "generated_code": "", "tokens_used": 2655, "duration_seconds": 18.429299116134644, "error": null}

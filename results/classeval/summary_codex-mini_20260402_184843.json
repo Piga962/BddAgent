@@ -1,0 +1,22 @@
+{
+  "model": "codex-mini",
+  "timestamp": "20260402_184843",
+  "n_problems": 100,
+  "conditions": {
+    "bdd": {
+      "passed": 0,
+      "total": 100,
+      "pass_rate": 0.0
+    },
+    "cot": {
+      "passed": 0,
+      "total": 100,
+      "pass_rate": 0.0
+    },
+    "direct": {
+      "passed": 0,
+      "total": 100,
+      "pass_rate": 0.0
+    }
+  }
+}

@@ -1,6 +1,10 @@
 .env
 .venv
-/results
+
+# results/ holds the committed pre-generated answers for the paper (tracked).
+# Only the local cache of regenerated figures and any new run logs are ignored.
+/figures/
+/results/logs/
 
 # OS junk
 .DS_Store
@@ -9,6 +13,9 @@
 # Large downloaded datasets (not for version control)
 /data/DevEval-main/
 /data/deveval_data.zip
+
+# Legacy / not-in-paper results kept locally for provenance, not shipped
+/archive/results-legacy/
 
 # Generated run logs
 /logs/

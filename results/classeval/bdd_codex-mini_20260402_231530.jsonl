@@ -1,0 +1,14 @@
+{"task_id": "ClassEval_0", "class_name": "AccessGatewayFilter", "condition": "bdd", "passed": false, "generated_code": "", "tokens_used": 1689, "duration_seconds": 9.357799053192139, "error": null}
+{"task_id": "ClassEval_1", "class_name": "AreaCalculator", "condition": "bdd", "passed": false, "generated_code": "", "tokens_used": 2790, "duration_seconds": 19.470376014709473, "error": null}
+{"task_id": "ClassEval_2", "class_name": "ArgumentParser", "condition": "bdd", "passed": false, "generated_code": "", "tokens_used": 4416, "duration_seconds": 29.853017807006836, "error": null}
+{"task_id": "ClassEval_3", "class_name": "ArrangementCalculator", "condition": "bdd", "passed": false, "generated_code": "", "tokens_used": 4714, "duration_seconds": 32.426405906677246, "error": null}
+{"task_id": "ClassEval_4", "class_name": "AssessmentSystem", "condition": "bdd", "passed": false, "generated_code": "", "tokens_used": 3627, "duration_seconds": 22.140482664108276, "error": null}
+{"task_id": "ClassEval_5", "class_name": "AutomaticGuitarSimulator", "condition": "bdd", "passed": false, "generated_code": "", "tokens_used": 2841, "duration_seconds": 19.315680027008057, "error": null}
+{"task_id": "ClassEval_6", "class_name": "AvgPartition", "condition": "bdd", "passed": false, "generated_code": "", "tokens_used": 4501, "duration_seconds": 33.550663232803345, "error": null}
+{"task_id": "ClassEval_7", "class_name": "BalancedBrackets", "condition": "bdd", "passed": false, "generated_code": "", "tokens_used": 2425, "duration_seconds": 18.72221612930298, "error": null}
+{"task_id": "ClassEval_8", "class_name": "BankAccount", "condition": "bdd", "passed": false, "generated_code": "", "tokens_used": 3853, "duration_seconds": 28.253644943237305, "error": null}
+{"task_id": "ClassEval_9", "class_name": "BigNumCalculator", "condition": "bdd", "passed": false, "generated_code": "", "tokens_used": 3508, "duration_seconds": 24.362692832946777, "error": null}
+{"task_id": "ClassEval_10", "class_name": "BinaryDataProcessor", "condition": "bdd", "passed": false, "generated_code": "", "tokens_used": 1602, "duration_seconds": 8.387663125991821, "error": null}
+{"task_id": "ClassEval_11", "class_name": "BitStatusUtil", "condition": "bdd", "passed": false, "generated_code": "", "tokens_used": 1429, "duration_seconds": 7.928145170211792, "error": null}
+{"task_id": "ClassEval_12", "class_name": "BlackjackGame", "condition": "bdd", "passed": false, "generated_code": "", "tokens_used": 3712, "duration_seconds": 22.463212728500366, "error": null}
+{"task_id": "ClassEval_13", "class_name": "BookManagement", "condition": "bdd", "passed": false, "generated_code": "", "tokens_used": 2832, "duration_seconds": 18.627100229263306, "error": null}

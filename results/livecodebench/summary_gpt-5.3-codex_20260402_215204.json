@@ -1,0 +1,23 @@
+{
+  "model": "gpt-5.3-codex",
+  "provider": "azure_responses",
+  "timestamp": "20260402_215204",
+  "n_problems": 50,
+  "conditions": {
+    "bdd": {
+      "passed": 13,
+      "total": 50,
+      "pass_rate": 0.26
+    },
+    "cot": {
+      "passed": 2,
+      "total": 50,
+      "pass_rate": 0.04
+    },
+    "direct": {
+      "passed": 27,
+      "total": 50,
+      "pass_rate": 0.54
+    }
+  }
+}

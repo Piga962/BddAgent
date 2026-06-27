@@ -1,0 +1,292 @@
+{
+  "Llama-3.3-70B-Instruct": {
+    "bdd": {
+      "base_passed": 126,
+      "plus_passed": 120,
+      "total": 164,
+      "base_rate": 0.7682926829268293,
+      "plus_rate": 0.7317073170731707,
+      "robustness": 0.9523809523809523,
+      "drop": 0.03658536585365857
+    },
+    "cot": {
+      "base_passed": 132,
+      "plus_passed": 125,
+      "total": 164,
+      "base_rate": 0.8048780487804879,
+      "plus_rate": 0.7621951219512195,
+      "robustness": 0.946969696969697,
+      "drop": 0.04268292682926833
+    },
+    "direct": {
+      "base_passed": 126,
+      "plus_passed": 119,
+      "total": 164,
+      "base_rate": 0.7682926829268293,
+      "plus_rate": 0.725609756097561,
+      "robustness": 0.9444444444444444,
+      "drop": 0.04268292682926833
+    }
+  },
+  "codex-mini": {
+    "bdd": {
+      "base_passed": 24,
+      "plus_passed": 24,
+      "total": 164,
+      "base_rate": 0.14634146341463414,
+      "plus_rate": 0.14634146341463414,
+      "robustness": 1.0,
+      "drop": 0.0
+    },
+    "cot": {
+      "base_passed": 20,
+      "plus_passed": 20,
+      "total": 164,
+      "base_rate": 0.12195121951219512,
+      "plus_rate": 0.12195121951219512,
+      "robustness": 1.0,
+      "drop": 0.0
+    },
+    "direct": {
+      "base_passed": 4,
+      "plus_passed": 4,
+      "total": 164,
+      "base_rate": 0.024390243902439025,
+      "plus_rate": 0.024390243902439025,
+      "robustness": 1.0,
+      "drop": 0.0
+    }
+  },
+  "gemini-2.5-flash": {
+    "bdd": {
+      "base_passed": 38,
+      "plus_passed": 37,
+      "total": 164,
+      "base_rate": 0.23170731707317074,
+      "plus_rate": 0.22560975609756098,
+      "robustness": 0.9736842105263158,
+      "drop": 0.0060975609756097615
+    },
+    "cot": {
+      "base_passed": 17,
+      "plus_passed": 17,
+      "total": 164,
+      "base_rate": 0.10365853658536585,
+      "plus_rate": 0.10365853658536585,
+      "robustness": 1.0,
+      "drop": 0.0
+    },
+    "direct": {
+      "base_passed": 27,
+      "plus_passed": 27,
+      "total": 164,
+      "base_rate": 0.16463414634146342,
+      "plus_rate": 0.16463414634146342,
+      "robustness": 1.0,
+      "drop": 0.0
+    }
+  },
+  "gemini-3.1-flash-lite-preview": {
+    "bdd": {
+      "base_passed": 48,
+      "plus_passed": 46,
+      "total": 164,
+      "base_rate": 0.2926829268292683,
+      "plus_rate": 0.2804878048780488,
+      "robustness": 0.9583333333333334,
+      "drop": 0.012195121951219468
+    },
+    "cot": {
+      "base_passed": 43,
+      "plus_passed": 43,
+      "total": 164,
+      "base_rate": 0.2621951219512195,
+      "plus_rate": 0.2621951219512195,
+      "robustness": 1.0,
+      "drop": 0.0
+    },
+    "direct": {
+      "base_passed": 46,
+      "plus_passed": 45,
+      "total": 164,
+      "base_rate": 0.2804878048780488,
+      "plus_rate": 0.27439024390243905,
+      "robustness": 0.9782608695652174,
+      "drop": 0.0060975609756097615
+    }
+  },
+  "gpt-35-turbo": {
+    "bdd": {
+      "base_passed": 142,
+      "plus_passed": 139,
+      "total": 164,
+      "base_rate": 0.8658536585365854,
+      "plus_rate": 0.8475609756097561,
+      "robustness": 0.9788732394366197,
+      "drop": 0.018292682926829285
+    },
+    "cot": {
+      "base_passed": 119,
+      "plus_passed": 116,
+      "total": 164,
+      "base_rate": 0.725609756097561,
+      "plus_rate": 0.7073170731707317,
+      "robustness": 0.9747899159663865,
+      "drop": 0.018292682926829285
+    },
+    "direct": {
+      "base_passed": 115,
+      "plus_passed": 112,
+      "total": 164,
+      "base_rate": 0.7012195121951219,
+      "plus_rate": 0.6829268292682927,
+      "robustness": 0.9739130434782609,
+      "drop": 0.018292682926829174
+    }
+  },
+  "gpt-4.1": {
+    "bdd": {
+      "base_passed": 113,
+      "plus_passed": 112,
+      "total": 164,
+      "base_rate": 0.6890243902439024,
+      "plus_rate": 0.6829268292682927,
+      "robustness": 0.9911504424778761,
+      "drop": 0.0060975609756096505
+    },
+    "cot": {
+      "base_passed": 109,
+      "plus_passed": 107,
+      "total": 164,
+      "base_rate": 0.6646341463414634,
+      "plus_rate": 0.6524390243902439,
+      "robustness": 0.981651376146789,
+      "drop": 0.012195121951219523
+    },
+    "direct": {
+      "base_passed": 116,
+      "plus_passed": 115,
+      "total": 164,
+      "base_rate": 0.7073170731707317,
+      "plus_rate": 0.7012195121951219,
+      "robustness": 0.9913793103448276,
+      "drop": 0.0060975609756097615
+    }
+  },
+  "gpt-4.1-mini": {
+    "bdd": {
+      "base_passed": 0,
+      "plus_passed": 0,
+      "total": 164,
+      "base_rate": 0.0,
+      "plus_rate": 0.0,
+      "robustness": 0,
+      "drop": 0.0
+    },
+    "cot": {
+      "base_passed": 0,
+      "plus_passed": 0,
+      "total": 164,
+      "base_rate": 0.0,
+      "plus_rate": 0.0,
+      "robustness": 0,
+      "drop": 0.0
+    },
+    "direct": {
+      "base_passed": 0,
+      "plus_passed": 0,
+      "total": 164,
+      "base_rate": 0.0,
+      "plus_rate": 0.0,
+      "robustness": 0,
+      "drop": 0.0
+    }
+  },
+  "gpt-4o": {
+    "bdd": {
+      "base_passed": 134,
+      "plus_passed": 131,
+      "total": 164,
+      "base_rate": 0.8170731707317073,
+      "plus_rate": 0.7987804878048781,
+      "robustness": 0.9776119402985075,
+      "drop": 0.018292682926829174
+    },
+    "cot": {
+      "base_passed": 146,
+      "plus_passed": 142,
+      "total": 164,
+      "base_rate": 0.8902439024390244,
+      "plus_rate": 0.8658536585365854,
+      "robustness": 0.9726027397260274,
+      "drop": 0.024390243902439046
+    },
+    "direct": {
+      "base_passed": 141,
+      "plus_passed": 138,
+      "total": 164,
+      "base_rate": 0.8597560975609756,
+      "plus_rate": 0.8414634146341463,
+      "robustness": 0.9787234042553191,
+      "drop": 0.018292682926829285
+    }
+  },
+  "gpt-4o-mini": {
+    "bdd": {
+      "base_passed": 0,
+      "plus_passed": 0,
+      "total": 164,
+      "base_rate": 0.0,
+      "plus_rate": 0.0,
+      "robustness": 0,
+      "drop": 0.0
+    },
+    "cot": {
+      "base_passed": 0,
+      "plus_passed": 0,
+      "total": 164,
+      "base_rate": 0.0,
+      "plus_rate": 0.0,
+      "robustness": 0,
+      "drop": 0.0
+    },
+    "direct": {
+      "base_passed": 0,
+      "plus_passed": 0,
+      "total": 164,
+      "base_rate": 0.0,
+      "plus_rate": 0.0,
+      "robustness": 0,
+      "drop": 0.0
+    }
+  },
+  "gpt-5.3-codex": {
+    "bdd": {
+      "base_passed": 142,
+      "plus_passed": 140,
+      "total": 164,
+      "base_rate": 0.8658536585365854,
+      "plus_rate": 0.8536585365853658,
+      "robustness": 0.9859154929577465,
+      "drop": 0.012195121951219523
+    },
+    "cot": {
+      "base_passed": 148,
+      "plus_passed": 144,
+      "total": 164,
+      "base_rate": 0.9024390243902439,
+      "plus_rate": 0.8780487804878049,
+      "robustness": 0.972972972972973,
+      "drop": 0.024390243902439046
+    },
+    "direct": {
+      "base_passed": 134,
+      "plus_passed": 132,
+      "total": 164,
+      "base_rate": 0.8170731707317073,
+      "plus_rate": 0.8048780487804879,
+      "robustness": 0.9850746268656716,
+      "drop": 0.012195121951219412
+    }
+  }
+}

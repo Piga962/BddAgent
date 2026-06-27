@@ -1,0 +1,23 @@
+{
+  "model": "claude-sonnet-4-20250514",
+  "provider": "anthropic",
+  "timestamp": "20260402_172347",
+  "n_problems": 50,
+  "conditions": {
+    "bdd": {
+      "passed": 14,
+      "total": 50,
+      "pass_rate": 0.28
+    },
+    "cot": {
+      "passed": 14,
+      "total": 50,
+      "pass_rate": 0.28
+    },
+    "direct": {
+      "passed": 19,
+      "total": 50,
+      "pass_rate": 0.38
+    }
+  }
+}

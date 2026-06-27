@@ -1,0 +1,44 @@
+{
+  "model": "gpt-4o",
+  "provider": "azure",
+  "n_problems": 164,
+  "seed": 42,
+  "timestamp": "20260401_154931",
+  "conditions": {
+    "bdd": {
+      "passed": 134,
+      "pass_rate": 0.8170731707317073,
+      "ci_lower": 0.7508782389178128,
+      "ci_upper": 0.8687536044392572,
+      "avg_tokens": 922.7682926829268
+    },
+    "cot": {
+      "passed": 146,
+      "pass_rate": 0.8902439024390244,
+      "ci_lower": 0.8331851514303099,
+      "ci_upper": 0.9294386557783916,
+      "avg_tokens": 1666.7256097560976
+    },
+    "direct": {
+      "passed": 141,
+      "pass_rate": 0.8597560975609756,
+      "ci_lower": 0.7983470598947401,
+      "ci_upper": 0.9046967623757817,
+      "avg_tokens": 289.4207317073171
+    }
+  },
+  "pairwise": {
+    "bdd_vs_cot": {
+      "difference": -0.07317073170731714,
+      "cohens_d": -0.20813769394078824
+    },
+    "bdd_vs_direct": {
+      "difference": -0.04268292682926833,
+      "cohens_d": -0.11615957537067721
+    },
+    "cot_vs_direct": {
+      "difference": 0.030487804878048808,
+      "cohens_d": 0.092284542166471
+    }
+  }
+}

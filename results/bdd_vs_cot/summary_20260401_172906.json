@@ -1,0 +1,44 @@
+{
+  "model": "gpt-4o-mini",
+  "provider": "azure",
+  "n_problems": 164,
+  "seed": 42,
+  "timestamp": "20260401_172906",
+  "conditions": {
+    "bdd": {
+      "passed": 0,
+      "pass_rate": 0.0,
+      "ci_lower": 0,
+      "ci_upper": 0.022888247013851153,
+      "avg_tokens": 0
+    },
+    "cot": {
+      "passed": 0,
+      "pass_rate": 0.0,
+      "ci_lower": 0,
+      "ci_upper": 0.022888247013851153,
+      "avg_tokens": 0
+    },
+    "direct": {
+      "passed": 0,
+      "pass_rate": 0.0,
+      "ci_lower": 0,
+      "ci_upper": 0.022888247013851153,
+      "avg_tokens": 0
+    }
+  },
+  "pairwise": {
+    "bdd_vs_cot": {
+      "difference": 0.0,
+      "cohens_d": 0.0
+    },
+    "bdd_vs_direct": {
+      "difference": 0.0,
+      "cohens_d": 0.0
+    },
+    "cot_vs_direct": {
+      "difference": 0.0,
+      "cohens_d": 0.0
+    }
+  }
+}
