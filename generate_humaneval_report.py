@@ -28,13 +28,13 @@ def generate_latex_table(results: dict) -> str:
 
     table = f"""\\begin{{table}}[t]
 \\centering
-\\caption{{HumanEval Pass@1 Results: BDD vs No-BDD (Gemini 2.5 Flash, n={results['total_problems']}, {results['n_runs']} seeds). BDD shows substantial improvement over direct prompting.}}\\label{{tab:humaneval}}
+\\caption{{HumanEval Pass@1 Results: TCGP vs No-TCGP (Gemini 2.5 Flash, n={results['total_problems']}, {results['n_runs']} seeds). TCGP shows substantial improvement over direct prompting.}}\\label{{tab:humaneval}}
 \\begin{{tabular}}{{lccc}}
 \\toprule
 \\textbf{{Condition}} & \\textbf{{Pass@1}} & \\textbf{{95\\% CI}} & \\textbf{{Passed}} \\\\
 \\midrule
-Without BDD & {no_bdd['pass_rate']*100:.1f}\\% & [{no_bdd['ci_95_lower']*100:.1f}\\%, {no_bdd['ci_95_upper']*100:.1f}\\%] & {no_bdd['total_passed']}/{results['total_problems']} \\\\
-With BDD & {bdd['pass_rate']*100:.1f}\\% & [{bdd['ci_95_lower']*100:.1f}\\%, {bdd['ci_95_upper']*100:.1f}\\%] & {bdd['total_passed']}/{results['total_problems']} \\\\
+Without TCGP & {no_bdd['pass_rate']*100:.1f}\\% & [{no_bdd['ci_95_lower']*100:.1f}\\%, {no_bdd['ci_95_upper']*100:.1f}\\%] & {no_bdd['total_passed']}/{results['total_problems']} \\\\
+With TCGP & {bdd['pass_rate']*100:.1f}\\% & [{bdd['ci_95_lower']*100:.1f}\\%, {bdd['ci_95_upper']*100:.1f}\\%] & {bdd['total_passed']}/{results['total_problems']} \\\\
 \\midrule
 \\textbf{{Improvement}} & \\textbf{{+{agg['difference']*100:.1f}\\%}} & \\multicolumn{{2}}{{c}}{{(+{rel_improvement:.0f}\\% relative, Cohen's $d$={agg['cohens_d']:.2f})}} \\\\
 \\bottomrule
@@ -57,7 +57,7 @@ def generate_per_seed_table(results: dict) -> str:
 \\caption{{Per-seed consistency check for HumanEval results.}}\\label{{tab:humaneval-seeds}}
 \\begin{{tabular}}{{lccc}}
 \\toprule
-\\textbf{{Seed}} & \\textbf{{BDD}} & \\textbf{{No-BDD}} & \\textbf{{Difference}} \\\\
+\\textbf{{Seed}} & \\textbf{{TCGP}} & \\textbf{{No-TCGP}} & \\textbf{{Difference}} \\\\
 \\midrule
 {chr(10).join(rows)}
 \\bottomrule
@@ -91,7 +91,7 @@ def generate_text_report(results: dict) -> str:
 
     report = f"""
 ================================================================================
-HUMANEVAL ABLATION STUDY: BDD vs NO-BDD CODE GENERATION
+HUMANEVAL ABLATION STUDY: TCGP vs NO-TCGP CODE GENERATION
 ================================================================================
 
 EXPERIMENT DETAILS
@@ -106,8 +106,8 @@ AGGREGATED RESULTS
 ------------------
                         Pass@1          95% CI              Passed/Total
 --------------------------------------------------------------------------------
-Without BDD             {no_bdd['pass_rate']*100:5.1f}%          [{no_bdd['ci_95_lower']*100:.1f}%, {no_bdd['ci_95_upper']*100:.1f}%]       {no_bdd['total_passed']}/{results['total_problems']}
-With BDD                {bdd['pass_rate']*100:5.1f}%          [{bdd['ci_95_lower']*100:.1f}%, {bdd['ci_95_upper']*100:.1f}%]       {bdd['total_passed']}/{results['total_problems']}
+Without TCGP             {no_bdd['pass_rate']*100:5.1f}%          [{no_bdd['ci_95_lower']*100:.1f}%, {no_bdd['ci_95_upper']*100:.1f}%]       {no_bdd['total_passed']}/{results['total_problems']}
+With TCGP                {bdd['pass_rate']*100:5.1f}%          [{bdd['ci_95_lower']*100:.1f}%, {bdd['ci_95_upper']*100:.1f}%]       {bdd['total_passed']}/{results['total_problems']}
 --------------------------------------------------------------------------------
 
 STATISTICAL ANALYSIS
@@ -117,12 +117,12 @@ Relative Improvement:   +{rel_improvement:.0f}%
 Cohen's d:              {agg['cohens_d']:.3f} ({effect_interpretation} effect)
 
 Note: The 95% confidence intervals do NOT overlap, suggesting the improvement
-is statistically meaningful. The BDD condition's lower CI bound ({bdd['ci_95_lower']*100:.1f}%)
-exceeds the no-BDD condition's upper CI bound ({no_bdd['ci_95_upper']*100:.1f}%).
+is statistically meaningful. The TCGP condition's lower CI bound ({bdd['ci_95_lower']*100:.1f}%)
+exceeds the no-TCGP condition's upper CI bound ({no_bdd['ci_95_upper']*100:.1f}%).
 
 PER-SEED CONSISTENCY
 --------------------
-{'Seed':<10} {'BDD':<12} {'No-BDD':<12} {'Difference':<12}
+{'Seed':<10} {'TCGP':<12} {'No-TCGP':<12} {'Difference':<12}
 {'-'*50}"""
 
     for ps in results["per_seed"]:
@@ -132,7 +132,7 @@ PER-SEED CONSISTENCY
 
 KEY FINDINGS
 ------------
-1. BDD integration improves HumanEval Pass@1 by +{agg['difference']*100:.1f}% absolute
+1. TCGP integration improves HumanEval Pass@1 by +{agg['difference']*100:.1f}% absolute
    ({rel_improvement:.0f}% relative improvement)
 
 2. The improvement is consistent across all tested seeds (range:
@@ -144,7 +144,7 @@ KEY FINDINGS
 
 IMPLICATIONS FOR PAPER
 ----------------------
-These results support the hypothesis that BDD-guided prompting improves LLM
+These results support the hypothesis that TCGP-guided prompting improves LLM
 code generation quality. The +{rel_improvement:.0f}% relative improvement on HumanEval
 complements the DevEval findings showing +14.7% improvement on complex tasks.
 

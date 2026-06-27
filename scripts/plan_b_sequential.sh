@@ -23,7 +23,7 @@ run_one() {
   : > "$log"
   echo "[$(date +%H:%M:%S)] START $label" | tee -a "$MASTER"
 
-  python3 run_bdd_vs_cot.py "$@" > "$log" 2>&1 &
+  python3 run_tcgp_vs_cot.py "$@" > "$log" 2>&1 &
   local pid=$!
 
   while kill -0 "$pid" 2>/dev/null; do

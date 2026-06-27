@@ -33,27 +33,27 @@ HUMANEVAL_RESULTS = [
 ]
 
 
-def compute_bdd_advantage(results: List[Tuple]) -> np.ndarray:
-    """Compute BDD - CoT difference for each model."""
-    return np.array([r[2] - r[3] for r in results])  # BDD - CoT
+def compute_tcgp_advantage(results: List[Tuple]) -> np.ndarray:
+    """Compute TCGP - CoT difference for each model."""
+    return np.array([r[2] - r[3] for r in results])  # TCGP - CoT
 
 
 def compute_correlation(results: List[Tuple]) -> float:
-    """Compute correlation between baseline capability and BDD advantage."""
+    """Compute correlation between baseline capability and TCGP advantage."""
     baselines = np.array([r[1] for r in results])
-    advantages = compute_bdd_advantage(results)
+    advantages = compute_tcgp_advantage(results)
     return np.corrcoef(baselines, advantages)[0, 1]
 
 
 def find_optimal_threshold(results: List[Tuple]) -> Tuple[float, float]:
-    """Find threshold that best separates CoT-winning from BDD-winning models.
+    """Find threshold that best separates CoT-winning from TCGP-winning models.
 
     Returns: (threshold, accuracy)
     """
     baselines = np.array([r[1] for r in results])
-    advantages = compute_bdd_advantage(results)
+    advantages = compute_tcgp_advantage(results)
 
-    # CoT wins when advantage < 0 (i.e., CoT > BDD)
+    # CoT wins when advantage < 0 (i.e., CoT > TCGP)
     cot_wins = advantages < 0
 
     best_threshold = 0
@@ -61,7 +61,7 @@ def find_optimal_threshold(results: List[Tuple]) -> Tuple[float, float]:
 
     # Try all possible thresholds
     for threshold in np.linspace(0.05, 0.95, 100):
-        # Predict: above threshold -> CoT wins, below -> BDD wins
+        # Predict: above threshold -> CoT wins, below -> TCGP wins
         predicted_cot_wins = baselines > threshold
         accuracy = np.mean(predicted_cot_wins == cot_wins)
 
@@ -119,7 +119,7 @@ def bootstrap_threshold(results: List[Tuple], n_bootstrap: int = 10000) -> Dict:
 def test_specific_threshold(results: List[Tuple], threshold: float) -> Dict:
     """Test a specific threshold value."""
     baselines = np.array([r[1] for r in results])
-    advantages = compute_bdd_advantage(results)
+    advantages = compute_tcgp_advantage(results)
     cot_wins = advantages < 0
 
     predicted_cot_wins = baselines > threshold
@@ -129,8 +129,8 @@ def test_specific_threshold(results: List[Tuple], threshold: float) -> Dict:
     correct = []
     incorrect = []
     for i, (name, baseline, bdd, cot) in enumerate(results):
-        pred = "CoT" if baseline > threshold else "BDD"
-        actual = "CoT" if cot > bdd else "BDD"
+        pred = "CoT" if baseline > threshold else "TCGP"
+        actual = "CoT" if cot > bdd else "TCGP"
         if pred == actual:
             correct.append(name)
         else:
@@ -201,12 +201,12 @@ def generate_visualizations(bootstrap_results: Dict, output_dir: Path):
     ax.axhline(0, color='gray', linestyle='-', linewidth=1)
 
     # Shade regions
-    ax.fill_betweenx([-0.2, 0.2], 0, 0.75, alpha=0.1, color='blue', label='BDD region')
+    ax.fill_betweenx([-0.2, 0.2], 0, 0.75, alpha=0.1, color='blue', label='TCGP region')
     ax.fill_betweenx([-0.2, 0.2], 0.75, 1.0, alpha=0.1, color='red', label='CoT region')
 
     ax.set_xlabel('Baseline Capability (Direct Pass@1)')
-    ax.set_ylabel('BDD Advantage (BDD - CoT)')
-    ax.set_title('Model Capability vs BDD Advantage')
+    ax.set_ylabel('TCGP Advantage (TCGP - CoT)')
+    ax.set_title('Model Capability vs TCGP Advantage')
     ax.legend(loc='upper left')
     ax.set_xlim(-0.05, 1.0)
     ax.set_ylim(-0.2, 0.2)
@@ -230,7 +230,7 @@ def main():
     print("-" * 40)
 
     correlation = compute_correlation(HUMANEVAL_RESULTS)
-    print(f"   Correlation (baseline vs BDD advantage): r = {correlation:.3f}")
+    print(f"   Correlation (baseline vs TCGP advantage): r = {correlation:.3f}")
 
     optimal_threshold, accuracy = find_optimal_threshold(HUMANEVAL_RESULTS)
     print(f"   Optimal threshold: {optimal_threshold:.1%}")

@@ -63,7 +63,7 @@ class ActionContextEnvironment(Environment):
 class StagedActionEnvironment(Environment):
     """
     Environment with review-before-commit patterns.
-    Perfect for BDD where code generation should be reviewed before execution.
+    Perfect for TCGP where code generation should be reviewed before execution.
     """
     def __init__(self):
         self.staged_transactions = {}
@@ -87,7 +87,7 @@ class StagedActionEnvironment(Environment):
             for action, args in transaction.actions
         ]
         
-        review_prompt = f"""Review these staged BDD actions for safety:
+        review_prompt = f"""Review these staged TCGP actions for safety:
         
         Task ID: {task_id}  @ 
         
@@ -95,10 +95,10 @@ class StagedActionEnvironment(Environment):
         {chr(10).join(staged_actions)}
         
         Consider:
-        1. Are all actions necessary for the BDD task?
+        1. Are all actions necessary for the TCGP task?
         2. Could any action have unintended consequences?
         3. Are the actions in a safe order?
-        4. Will this properly implement the BDD scenario?
+        4. Will this properly implement the TCGP scenario?
         5. Is there a safer way to achieve the same goal?
         
         Should these actions be approved?
@@ -221,7 +221,7 @@ class AIReviewBDDEnvironment(Environment):
         # Create specific review prompts based on operation type
         review_prompts = {
             'generate_step_definitions': f"""
-            Review this BDD step definitions code for:
+            Review this TCGP step definitions code for:
             
             CONTENT TO REVIEW:
             {content}

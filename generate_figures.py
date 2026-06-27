@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Generate publication-quality figures for BDD vs CoT paper.
+Generate publication-quality figures for TCGP vs CoT paper.
 Consolidates all experimental results into comprehensive visualizations.
 """
 
@@ -96,7 +96,7 @@ OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 def fig1_multimodel_comparison():
     """
-    Figure 1: Grouped bar chart showing BDD vs CoT vs Direct across all 10 models.
+    Figure 1: Grouped bar chart showing TCGP vs CoT vs Direct across all 10 models.
     Models sorted by baseline (Direct) capability.
     """
     # Sort models by Direct (baseline) performance
@@ -142,7 +142,7 @@ def fig2_capability_threshold():
     """
     Figure 2: Scatter plot showing model capability threshold.
     X-axis: Baseline (Direct) Pass@1
-    Y-axis: BDD - CoT difference
+    Y-axis: TCGP - CoT difference
     """
     fig, ax = plt.subplots(figsize=(8, 6))
 
@@ -259,7 +259,7 @@ def fig3_cot_hurts_performance():
 
 def fig4_token_efficiency():
     """
-    Figure 4: Token efficiency comparison - BDD vs CoT.
+    Figure 4: Token efficiency comparison - TCGP vs CoT.
     """
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
 
@@ -395,14 +395,14 @@ def fig7_winner_pie():
     """
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 5))
 
-    # Left: BDD vs CoT winner count
+    # Left: TCGP vs CoT winner count
     bdd_wins = sum(1 for d in MODELS_DATA.values() if d['bdd'] > d['cot'])
     cot_wins = len(MODELS_DATA) - bdd_wins
 
-    ax1.pie([bdd_wins, cot_wins], labels=['BDD Wins', 'CoT Wins'],
+    ax1.pie([bdd_wins, cot_wins], labels=['TCGP Wins', 'CoT Wins'],
             colors=[COLORS['bdd'], COLORS['cot']],
             autopct='%1.0f%%', startangle=90, explode=(0.05, 0.05))
-    ax1.set_title(f'BDD vs CoT: {bdd_wins}/{len(MODELS_DATA)} vs {cot_wins}/{len(MODELS_DATA)}')
+    ax1.set_title(f'TCGP vs CoT: {bdd_wins}/{len(MODELS_DATA)} vs {cot_wins}/{len(MODELS_DATA)}')
 
     # Right: Models where CoT hurts vs helps
     cot_helps = sum(1 for d in MODELS_DATA.values() if d['cot'] > d['direct'])
@@ -567,10 +567,10 @@ def print_latex_table():
 
     print(r"\begin{table}[t]")
     print(r"\centering")
-    print(r"\caption{Multi-model comparison of BDD vs CoT vs Direct prompting (HumanEval, n=164).}")
+    print(r"\caption{Multi-model comparison of TCGP vs CoT vs Direct prompting (HumanEval, n=164).}")
     print(r"\begin{tabular}{lccccc}")
     print(r"\toprule")
-    print(r"\textbf{Model} & \textbf{BDD} & \textbf{CoT} & \textbf{Direct} & \textbf{BDD$-$CoT} & \textbf{Winner} \\")
+    print(r"\textbf{Model} & \textbf{TCGP} & \textbf{CoT} & \textbf{Direct} & \textbf{TCGP$-$CoT} & \textbf{Winner} \\")
     print(r"\midrule")
 
     bdd_wins = 0
@@ -579,7 +579,7 @@ def print_latex_table():
     for model in sorted_models:
         d = MODELS_DATA[model]
         diff = d['bdd'] - d['cot']
-        winner = 'BDD' if diff > 0 else 'CoT'
+        winner = 'TCGP' if diff > 0 else 'CoT'
         if diff > 0:
             bdd_wins += 1
         else:
@@ -592,7 +592,7 @@ def print_latex_table():
         print(f"{model} & {bdd_str} & {cot_str} & {d['direct']:.1f}\\% & {diff_str} & {winner} \\\\")
 
     print(r"\midrule")
-    print(f"\\multicolumn{{4}}{{l}}{{\\textbf{{Overall: BDD wins {bdd_wins}/{len(MODELS_DATA)} ({100*bdd_wins/len(MODELS_DATA):.0f}\\%), CoT wins {cot_wins}/{len(MODELS_DATA)} ({100*cot_wins/len(MODELS_DATA):.0f}\\%)}}}} & \\multicolumn{{2}}{{r}}{{}} \\\\")
+    print(f"\\multicolumn{{4}}{{l}}{{\\textbf{{Overall: TCGP wins {bdd_wins}/{len(MODELS_DATA)} ({100*bdd_wins/len(MODELS_DATA):.0f}\\%), CoT wins {cot_wins}/{len(MODELS_DATA)} ({100*cot_wins/len(MODELS_DATA):.0f}\\%)}}}} & \\multicolumn{{2}}{{r}}{{}} \\\\")
     print(r"\bottomrule")
     print(r"\end{tabular}")
     print(r"\end{table}")

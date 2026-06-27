@@ -1,5 +1,7 @@
 .env
 .venv
+__pycache__/
+*.pyc
 
 # results/ holds the committed pre-generated answers for the paper (tracked).
 # Only the local cache of regenerated figures and any new run logs are ignored.

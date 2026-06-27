@@ -1,4 +1,4 @@
-"""Prompt templates for BDD vs CoT experiments."""
+"""Prompt templates for TCGP vs CoT experiments."""
 
 from .ablation_prompts import (
     PLAN_AND_SOLVE_STEP1,

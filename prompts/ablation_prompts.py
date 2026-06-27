@@ -118,8 +118,8 @@ Return ONLY the implementation code, no explanations.
 """
 
 
-# Ablation 2: Minimal BDD (reduces BDD to match Direct token count)
-# Tests whether BDD's structure matters or just having test cases
+# Ablation 2: Minimal TCGP (reduces TCGP to match Direct token count)
+# Tests whether TCGP's structure matters or just having test cases
 MINIMAL_BDD_STEP1 = """Analyze this function and generate exactly 2 test scenarios.
 
 {prompt}
@@ -288,7 +288,7 @@ ABLATION_CONFIGS = {
         "priority": "ESSENTIAL",
     },
     "E2b_minimal_bdd": {
-        "description": "Minimal BDD (2 scenarios, token-matched)",
+        "description": "Minimal TCGP (2 scenarios, token-matched)",
         "step1_prompt": MINIMAL_BDD_STEP1,
         "step2_prompt": MINIMAL_BDD_STEP2,
         "step1_tokens": 200,

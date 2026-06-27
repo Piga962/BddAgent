@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Statistical Analysis for BDD vs No-BDD Ablation Study
+Statistical Analysis for TCGP vs No-TCGP Ablation Study
 
 Generates publication-ready statistics:
 - 95% confidence intervals (Wilson score)
@@ -19,7 +19,7 @@ from collections import defaultdict
 
 @dataclass
 class AblationMetrics:
-    """Metrics for one condition (BDD or No-BDD)."""
+    """Metrics for one condition (TCGP or No-TCGP)."""
     model: str
     with_bdd: bool
     n_total: int
@@ -85,8 +85,8 @@ def mcnemar_test(paired_results: List[Tuple[bool, bool]]) -> Tuple[float, float]
     Returns chi-square statistic and p-value.
     """
     # Count discordant pairs
-    b = sum(1 for bdd, no_bdd in paired_results if bdd and not no_bdd)  # BDD success, No-BDD fail
-    c = sum(1 for bdd, no_bdd in paired_results if not bdd and no_bdd)  # BDD fail, No-BDD success
+    b = sum(1 for bdd, no_bdd in paired_results if bdd and not no_bdd)  # TCGP success, No-TCGP fail
+    c = sum(1 for bdd, no_bdd in paired_results if not bdd and no_bdd)  # TCGP fail, No-TCGP success
 
     if b + c == 0:
         return 0.0, 1.0
@@ -129,7 +129,7 @@ def load_ablation_results(results_dir: str) -> Dict[str, Dict[str, List[dict]]]:
 
 def analyze_model(model: str, bdd_results: List[dict], no_bdd_results: List[dict]) -> Tuple[AblationMetrics, AblationMetrics]:
     """Analyze results for a single model."""
-    # BDD metrics
+    # TCGP metrics
     bdd_success = sum(1 for r in bdd_results if r.get("success", False))
     bdd_rate = bdd_success / len(bdd_results) if bdd_results else 0
     bdd_ci = wilson_score_interval(bdd_success, len(bdd_results))
@@ -151,7 +151,7 @@ def analyze_model(model: str, bdd_results: List[dict], no_bdd_results: List[dict
         avg_code_length=int(sum(bdd_code_len) / len(bdd_code_len)) if bdd_code_len else 0
     )
 
-    # No-BDD metrics
+    # No-TCGP metrics
     no_bdd_success = sum(1 for r in no_bdd_results if r.get("success", False))
     no_bdd_rate = no_bdd_success / len(no_bdd_results) if no_bdd_results else 0
     no_bdd_ci = wilson_score_interval(no_bdd_success, len(no_bdd_results))
@@ -181,7 +181,7 @@ def generate_latex_table(all_metrics: List[Tuple[AblationMetrics, AblationMetric
     lines = [
         "\\begin{table}[htbp]",
         "\\centering",
-        "\\caption{Ablation Study: BDD vs Direct Prompting}",
+        "\\caption{Ablation Study: TCGP vs Direct Prompting}",
         "\\label{tab:ablation}",
         "\\begin{tabular}{lcccccc}",
         "\\toprule",
@@ -190,14 +190,14 @@ def generate_latex_table(all_metrics: List[Tuple[AblationMetrics, AblationMetric
     ]
 
     for bdd_m, no_bdd_m in all_metrics:
-        # BDD row
+        # TCGP row
         bdd_ci = f"[{bdd_m.ci_lower:.1%}, {bdd_m.ci_upper:.1%}]"
         lines.append(
-            f"{bdd_m.model} & BDD & {bdd_m.n_total} & {bdd_m.success_rate:.1%} & {bdd_ci} & "
+            f"{bdd_m.model} & TCGP & {bdd_m.n_total} & {bdd_m.success_rate:.1%} & {bdd_ci} & "
             f"{bdd_m.avg_duration:.1f} & {bdd_m.avg_tokens} \\\\"
         )
 
-        # No-BDD row
+        # No-TCGP row
         no_bdd_ci = f"[{no_bdd_m.ci_lower:.1%}, {no_bdd_m.ci_upper:.1%}]"
         lines.append(
             f" & Direct & {no_bdd_m.n_total} & {no_bdd_m.success_rate:.1%} & {no_bdd_ci} & "
@@ -227,7 +227,7 @@ def generate_report(results_dir: str = "results/ablation") -> str:
 
     report_lines = [
         "=" * 70,
-        "STATISTICAL ANALYSIS: BDD vs No-BDD ABLATION STUDY",
+        "STATISTICAL ANALYSIS: TCGP vs No-TCGP ABLATION STUDY",
         "=" * 70,
         ""
     ]
@@ -249,7 +249,7 @@ def generate_report(results_dir: str = "results/ablation") -> str:
             f"MODEL: {model}",
             f"{'=' * 50}",
             "",
-            f"{'Metric':<25} {'BDD':<20} {'No-BDD':<20}",
+            f"{'Metric':<25} {'TCGP':<20} {'No-TCGP':<20}",
             "-" * 65,
             f"{'Samples':<25} {bdd_m.n_total:<20} {no_bdd_m.n_total:<20}",
             f"{'API Success':<25} {bdd_m.n_success}/{bdd_m.n_total:<17} {no_bdd_m.n_success}/{no_bdd_m.n_total:<17}",
@@ -287,8 +287,8 @@ def generate_report(results_dir: str = "results/ablation") -> str:
         avg_no_bdd_rate = sum(m[1].success_rate for m in all_metrics) / len(all_metrics)
 
         report_lines.extend([
-            f"Average BDD Success Rate: {avg_bdd_rate:.1%}",
-            f"Average No-BDD Success Rate: {avg_no_bdd_rate:.1%}",
+            f"Average TCGP Success Rate: {avg_bdd_rate:.1%}",
+            f"Average No-TCGP Success Rate: {avg_no_bdd_rate:.1%}",
             f"Average Improvement: {(avg_bdd_rate - avg_no_bdd_rate):+.1%}",
             "",
             "Note: These are API success rates. Pass@1 requires running the",

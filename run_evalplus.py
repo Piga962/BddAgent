@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Convert BDD vs CoT results to EvalPlus format and run HumanEval+ evaluation.
+Convert TCGP vs CoT results to EvalPlus format and run HumanEval+ evaluation.
 
 EvalPlus provides 80x more test cases per problem, testing solution robustness.
 """

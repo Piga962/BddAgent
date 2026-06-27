@@ -201,7 +201,7 @@ def create_default_config(
     return ExperimentConfig(
         experiment_id=experiment_id,
         experiment_name=experiment_name,
-        description="Multi-model BDD-driven code generation experiment",
+        description="Multi-model TCGP-driven code generation experiment",
         models=models,
         dataset=dataset
     )

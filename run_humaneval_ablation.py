@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-HumanEval Ablation Study: BDD vs No-BDD Code Generation
+HumanEval Ablation Study: TCGP vs No-TCGP Code Generation
 
-This script evaluates the impact of BDD (Behavior-Driven Development) prompting
+This script evaluates the impact of TCGP (Behavior-Driven Development) prompting
 on code generation quality using the HumanEval benchmark (164 problems).
 
 Metrics computed:
@@ -55,7 +55,7 @@ def get_client(provider: str = "azure"):
 
 
 class HumanEvalBddAgent:
-    """BDD-driven code generation agent for HumanEval."""
+    """TCGP-driven code generation agent for HumanEval."""
 
     def __init__(self, model: str = "gpt-4.1", provider: str = "azure"):
         self.client = get_client(provider)
@@ -92,15 +92,15 @@ class HumanEvalBddAgent:
             )
             return response.choices[0].message.content, response.usage.total_tokens
 
-    def generate_with_bdd(self, prompt: str, entry_point: str) -> Tuple[str, float, int, str]:
-        """Generate code with BDD methodology.
+    def generate_with_tcgp(self, prompt: str, entry_point: str) -> Tuple[str, float, int, str]:
+        """Generate code with TCGP methodology.
 
         Returns: (code, duration, tokens, bdd_scenarios)
         """
         start = time.time()
         total_tokens = 0
 
-        # Step 1: Generate concrete BDD test scenarios
+        # Step 1: Generate concrete TCGP test scenarios
         bdd_prompt = f"""Analyze this function signature and docstring, then generate CONCRETE test scenarios.
 
 {prompt}
@@ -127,7 +127,7 @@ Use REAL values, not placeholders. Extract examples from the docstring if availa
         bdd_scenarios, tokens = self._call_llm(bdd_prompt, temperature=0.3, max_tokens=600)
         total_tokens += tokens
 
-        # Step 2: Generate code with BDD context
+        # Step 2: Generate code with TCGP context
         code_prompt = f"""Complete this Python function. The function signature and docstring are provided.
 
 {prompt}
@@ -153,8 +153,8 @@ Return ONLY the implementation code, no explanations.
 
         return code, duration, total_tokens, bdd_scenarios
 
-    def generate_without_bdd(self, prompt: str, entry_point: str) -> Tuple[str, float, int]:
-        """Generate code without BDD methodology.
+    def generate_without_tcgp(self, prompt: str, entry_point: str) -> Tuple[str, float, int]:
+        """Generate code without TCGP methodology.
 
         Returns: (code, duration, tokens)
         """
@@ -293,10 +293,10 @@ def run_humaneval_ablation(
     seed: int = 42,
     output_dir: str = "results/humaneval_ablation"
 ):
-    """Run HumanEval ablation study comparing BDD vs No-BDD."""
+    """Run HumanEval ablation study comparing TCGP vs No-TCGP."""
 
     print("=" * 70, flush=True)
-    print("HUMANEVAL ABLATION STUDY: BDD vs No-BDD", flush=True)
+    print("HUMANEVAL ABLATION STUDY: TCGP vs No-TCGP", flush=True)
     print("=" * 70, flush=True)
     print(f"Model: {model}", flush=True)
     print(f"Provider: {provider}", flush=True)
@@ -335,17 +335,17 @@ def run_humaneval_ablation(
 
         print(f"\n[{i+1}/{len(problems)}] {task_id}", flush=True)
 
-        # Generate with BDD
+        # Generate with TCGP
         try:
-            code, duration, tokens, bdd_scenarios = agent.generate_with_bdd(prompt, entry_point)
+            code, duration, tokens, bdd_scenarios = agent.generate_with_tcgp(prompt, entry_point)
             full_code = prompt + code
             passed, error = execute_test(full_code, test, entry_point)
 
             if passed:
                 bdd_passed += 1
-                print(f"  BDD: PASS ({duration:.1f}s)")
+                print(f"  TCGP: PASS ({duration:.1f}s)")
             else:
-                print(f"  BDD: FAIL ({duration:.1f}s) - {error[:50]}")
+                print(f"  TCGP: FAIL ({duration:.1f}s) - {error[:50]}")
 
             bdd_results.append({
                 "task_id": task_id,
@@ -359,7 +359,7 @@ def run_humaneval_ablation(
                 "error": error if not passed else None
             })
         except Exception as e:
-            print(f"  BDD: ERROR - {e}")
+            print(f"  TCGP: ERROR - {e}")
             bdd_results.append({
                 "task_id": task_id,
                 "with_bdd": True,
@@ -367,17 +367,17 @@ def run_humaneval_ablation(
                 "error": str(e)
             })
 
-        # Generate without BDD
+        # Generate without TCGP
         try:
-            code, duration, tokens = agent.generate_without_bdd(prompt, entry_point)
+            code, duration, tokens = agent.generate_without_tcgp(prompt, entry_point)
             full_code = prompt + code
             passed, error = execute_test(full_code, test, entry_point)
 
             if passed:
                 no_bdd_passed += 1
-                print(f"  No-BDD: PASS ({duration:.1f}s)")
+                print(f"  No-TCGP: PASS ({duration:.1f}s)")
             else:
-                print(f"  No-BDD: FAIL ({duration:.1f}s) - {error[:50]}")
+                print(f"  No-TCGP: FAIL ({duration:.1f}s) - {error[:50]}")
 
             no_bdd_results.append({
                 "task_id": task_id,
@@ -390,7 +390,7 @@ def run_humaneval_ablation(
                 "error": error if not passed else None
             })
         except Exception as e:
-            print(f"  No-BDD: ERROR - {e}")
+            print(f"  No-TCGP: ERROR - {e}")
             no_bdd_results.append({
                 "task_id": task_id,
                 "with_bdd": False,
@@ -429,8 +429,8 @@ def run_humaneval_ablation(
     print("=" * 70)
     print(f"\n{'Condition':<15} {'Pass@1':<12} {'95% CI':<20} {'Passed':<10}")
     print("-" * 60)
-    print(f"{'BDD':<15} {bdd_rate*100:>6.1f}%      [{bdd_ci[0]*100:.1f}%, {bdd_ci[1]*100:.1f}%]       {bdd_passed}/{n}")
-    print(f"{'No-BDD':<15} {no_bdd_rate*100:>6.1f}%      [{no_bdd_ci[0]*100:.1f}%, {no_bdd_ci[1]*100:.1f}%]       {no_bdd_passed}/{n}")
+    print(f"{'TCGP':<15} {bdd_rate*100:>6.1f}%      [{bdd_ci[0]*100:.1f}%, {bdd_ci[1]*100:.1f}%]       {bdd_passed}/{n}")
+    print(f"{'No-TCGP':<15} {no_bdd_rate*100:>6.1f}%      [{no_bdd_ci[0]*100:.1f}%, {no_bdd_ci[1]*100:.1f}%]       {no_bdd_passed}/{n}")
     print("-" * 60)
     print(f"\nDifference: {(bdd_rate - no_bdd_rate)*100:+.1f}%")
     print(f"Cohen's d: {effect_size:.3f}", end="")
@@ -477,7 +477,7 @@ def run_humaneval_ablation(
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(description="HumanEval BDD vs No-BDD Ablation Study")
+    parser = argparse.ArgumentParser(description="HumanEval TCGP vs No-TCGP Ablation Study")
     parser.add_argument("--model", default="gpt-4.1", help="Model to use")
     parser.add_argument("--provider", default="azure", choices=["azure", "openai", "anthropic", "gemini"])
     parser.add_argument("--samples", type=int, default=None, help="Number of samples (default: all 164)")

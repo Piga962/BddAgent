@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cost Analysis for BDD vs CoT Experiments
+Cost Analysis for TCGP vs CoT Experiments
 Calculates actual dollar costs based on API pricing (April 2025)
 """
 
@@ -122,12 +122,12 @@ def calculate_cost_per_success(model_name, condition):
 def generate_cost_table():
     """Generate cost comparison table."""
     print("=" * 100)
-    print("COST ANALYSIS: BDD vs CoT vs Direct (HumanEval, 164 problems)")
+    print("COST ANALYSIS: TCGP vs CoT vs Direct (HumanEval, 164 problems)")
     print("=" * 100)
     print()
 
     # Header
-    print(f"{'Model':<20} | {'BDD Cost':>10} | {'CoT Cost':>10} | {'Direct Cost':>10} | {'BDD Savings':>12} | {'Best Value':>12}")
+    print(f"{'Model':<20} | {'TCGP Cost':>10} | {'CoT Cost':>10} | {'Direct Cost':>10} | {'TCGP Savings':>12} | {'Best Value':>12}")
     print("-" * 100)
 
     total_bdd = 0
@@ -149,7 +149,7 @@ def generate_cost_table():
             cot_value = PASS_RATES[model]['cot'] / cot_cost if cot_cost > 0 else 0
             direct_value = PASS_RATES[model]['direct'] / direct_cost if direct_cost > 0 else 0
 
-            best = 'BDD' if bdd_value >= max(cot_value, direct_value) else \
+            best = 'TCGP' if bdd_value >= max(cot_value, direct_value) else \
                    ('CoT' if cot_value >= direct_value else 'Direct')
 
             print(f"{model:<20} | ${bdd_cost:>9.4f} | ${cot_cost:>9.4f} | ${direct_cost:>9.4f} | {savings:>10.1f}% | {best:>12}")
@@ -172,7 +172,7 @@ def generate_cost_per_success_table():
     print("=" * 100)
     print()
 
-    print(f"{'Model':<20} | {'BDD $/success':>14} | {'CoT $/success':>14} | {'Direct $/success':>16} | {'Most Efficient':>14}")
+    print(f"{'Model':<20} | {'TCGP $/success':>14} | {'CoT $/success':>14} | {'Direct $/success':>16} | {'Most Efficient':>14}")
     print("-" * 100)
 
     for model in EXPERIMENT_DATA.keys():
@@ -181,7 +181,7 @@ def generate_cost_per_success_table():
         direct_cps = calculate_cost_per_success(model, 'direct')
 
         if bdd_cps and cot_cps and direct_cps:
-            best = 'BDD' if bdd_cps <= min(cot_cps, direct_cps) else \
+            best = 'TCGP' if bdd_cps <= min(cot_cps, direct_cps) else \
                    ('CoT' if cot_cps <= direct_cps else 'Direct')
 
             print(f"{model:<20} | ${bdd_cps:>13.6f} | ${cot_cps:>13.6f} | ${direct_cps:>15.6f} | {best:>14}")
@@ -202,7 +202,7 @@ def generate_latex_cost_table():
     print(r"\label{tab:costs}")
     print(r"\begin{tabular}{lcccc}")
     print(r"\toprule")
-    print(r"\textbf{Model} & \textbf{BDD} & \textbf{CoT} & \textbf{Direct} & \textbf{BDD Savings} \\")
+    print(r"\textbf{Model} & \textbf{TCGP} & \textbf{CoT} & \textbf{Direct} & \textbf{TCGP Savings} \\")
     print(r"\midrule")
 
     for model in EXPERIMENT_DATA.keys():
@@ -222,17 +222,17 @@ def generate_latex_cost_table():
 
 def main():
     print("\n" + "=" * 100)
-    print("BDD vs CoT COST ANALYSIS")
+    print("TCGP vs CoT COST ANALYSIS")
     print("Based on HumanEval experiments with 10 LLMs")
     print("=" * 100 + "\n")
 
     total_bdd, total_cot, total_direct = generate_cost_table()
 
     print(f"\n📊 SUMMARY:")
-    print(f"   Total experiment cost (BDD):    ${total_bdd:.2f}")
+    print(f"   Total experiment cost (TCGP):    ${total_bdd:.2f}")
     print(f"   Total experiment cost (CoT):    ${total_cot:.2f}")
     print(f"   Total experiment cost (Direct): ${total_direct:.2f}")
-    print(f"   BDD saves {((total_cot - total_bdd) / total_cot * 100):.1f}% vs CoT")
+    print(f"   TCGP saves {((total_cot - total_bdd) / total_cot * 100):.1f}% vs CoT")
     print()
 
     generate_cost_per_success_table()

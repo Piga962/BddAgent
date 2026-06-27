@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-LiveCodeBench evaluation: BDD vs CoT vs Direct for competitive programming.
+LiveCodeBench evaluation: TCGP vs CoT vs Direct for competitive programming.
 
 LiveCodeBench is a contamination-free benchmark with 500+ problems from
 LeetCode, AtCoder, and Codeforces (2023-2024).
@@ -41,14 +41,14 @@ def time_limit(seconds):
         signal.alarm(0)
 
 
-def create_bdd_prompt(question: str, starter_code: str = "") -> str:
-    """Create BDD-style prompt for code generation."""
-    prompt = f"""You are solving a competitive programming problem. First, analyze the requirements using BDD scenarios, then implement the solution.
+def create_tcgp_prompt(question: str, starter_code: str = "") -> str:
+    """Create TCGP-style prompt for code generation."""
+    prompt = f"""You are solving a competitive programming problem. First, analyze the requirements using TCGP scenarios, then implement the solution.
 
 ## Problem:
 {question}
 
-## BDD Analysis:
+## TCGP Analysis:
 Before coding, identify:
 1. Given: What inputs/constraints are provided?
 2. When: What operation needs to be performed?
@@ -61,7 +61,7 @@ Consider edge cases:
 - Boundary values
 
 ## Instructions:
-1. Write BDD scenarios for the key test cases
+1. Write TCGP scenarios for the key test cases
 2. Then implement the complete solution
 3. Your code must read from stdin and print to stdout
 4. Return ONLY the complete Python solution
@@ -313,7 +313,7 @@ def evaluate_problem(problem: dict, condition: str, model: str, provider: str) -
 
     # Create prompt based on condition
     if condition == "bdd":
-        prompt = create_bdd_prompt(question, starter_code)
+        prompt = create_tcgp_prompt(question, starter_code)
     elif condition == "cot":
         prompt = create_cot_prompt(question, starter_code)
     else:  # direct
@@ -374,7 +374,7 @@ def evaluate_problem(problem: dict, condition: str, model: str, provider: str) -
 
 def main():
     import argparse
-    parser = argparse.ArgumentParser(description="Run LiveCodeBench BDD vs CoT evaluation")
+    parser = argparse.ArgumentParser(description="Run LiveCodeBench TCGP vs CoT evaluation")
     parser.add_argument("--model", type=str, default="gpt-4o", help="Model to use")
     parser.add_argument("--provider", type=str, default="azure",
                         choices=["azure", "azure_models", "azure_responses", "gemini", "anthropic"],

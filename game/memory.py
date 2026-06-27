@@ -11,7 +11,7 @@ from abc import ABC, abstractmethod
 
 @dataclass
 class Prompt:
-    """Enhanced prompt structure for BDD LLM interactions."""
+    """Enhanced prompt structure for TCGP LLM interactions."""
     messages: List[Dict] = field(default_factory=list)
     tools: List[Dict] = field(default_factory=list)
     metadata: dict = field(default_factory=dict)
@@ -40,7 +40,7 @@ class Memory:
         self.items = []
     
     # def get_bdd_context(self, context_type: str = None) -> List[Dict]:
-    #     """Get BDD-specific context like scenarios, features, test results."""
+    #     """Get TCGP-specific context like scenarios, features, test results."""
     #     if not context_type:
     #         return self.items[-5:]
         

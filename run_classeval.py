@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-ClassEval benchmark evaluation: BDD vs CoT vs Direct for class-level code generation.
+ClassEval benchmark evaluation: TCGP vs CoT vs Direct for class-level code generation.
 
 ClassEval contains 100 class-level Python tasks with 410 methods and ~33 test cases per class.
 """
@@ -38,9 +38,9 @@ def time_limit(seconds):
         signal.alarm(0)
 
 
-def create_bdd_prompt(skeleton: str, class_description: str, methods_info: list) -> str:
-    """Create BDD-style prompt for class generation."""
-    # Build BDD scenarios for each method
+def create_tcgp_prompt(skeleton: str, class_description: str, methods_info: list) -> str:
+    """Create TCGP-style prompt for class generation."""
+    # Build TCGP scenarios for each method
     scenarios = []
     for i, method in enumerate(methods_info[:5], 1):  # Limit to 5 methods for context
         method_name = method.get('method_name', 'unknown')
@@ -60,18 +60,18 @@ def create_bdd_prompt(skeleton: str, class_description: str, methods_info: list)
 
     bdd_scenarios = "\n\n".join(scenarios)
 
-    prompt = f"""You are implementing a Python class. First, analyze the requirements using BDD scenarios, then implement the complete class.
+    prompt = f"""You are implementing a Python class. First, analyze the requirements using TCGP scenarios, then implement the complete class.
 
 ## Class Skeleton (with method signatures and docstrings):
 ```python
 {skeleton}
 ```
 
-## BDD Scenarios to satisfy:
+## TCGP Scenarios to satisfy:
 {bdd_scenarios}
 
 ## Instructions:
-1. Review each BDD scenario carefully
+1. Review each TCGP scenario carefully
 2. Consider edge cases: empty inputs, None values, boundary conditions
 3. Implement ALL methods in the skeleton with complete, working code
 4. Return ONLY the complete Python class code, no explanations
@@ -295,7 +295,7 @@ def evaluate_problem(problem: dict, condition: str, model: str, provider: str) -
 
     # Create prompt based on condition
     if condition == "bdd":
-        prompt = create_bdd_prompt(skeleton, class_description, methods_info)
+        prompt = create_tcgp_prompt(skeleton, class_description, methods_info)
     elif condition == "cot":
         prompt = create_cot_prompt(skeleton, class_description, methods_info)
     else:  # direct
@@ -335,7 +335,7 @@ def evaluate_problem(problem: dict, condition: str, model: str, provider: str) -
 
 def main():
     import argparse
-    parser = argparse.ArgumentParser(description="Run ClassEval BDD vs CoT evaluation")
+    parser = argparse.ArgumentParser(description="Run ClassEval TCGP vs CoT evaluation")
     parser.add_argument("--model", type=str, default="gpt-4o", help="Model to use")
     parser.add_argument("--provider", type=str, default="azure", choices=["azure", "azure_models", "azure_responses", "gemini", "anthropic"],
                         help="API provider")

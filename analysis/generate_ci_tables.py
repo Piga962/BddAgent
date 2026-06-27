@@ -292,7 +292,7 @@ def generate_latex_table(
     lines.append("\\label{" + label + "}")
     lines.append("\\begin{tabular}{lccc}")
     lines.append("\\toprule")
-    lines.append("Model & BDD & CoT & Direct \\\\")
+    lines.append("Model & TCGP & CoT & Direct \\\\")
     lines.append("\\midrule")
 
     for model in models:
@@ -377,7 +377,7 @@ def generate_summary_stats_table(
     lines.append("\\label{tab:summary_stats}")
     lines.append("\\begin{tabular}{llccc}")
     lines.append("\\toprule")
-    lines.append("Benchmark & N & BDD & CoT & Direct \\\\")
+    lines.append("Benchmark & N & TCGP & CoT & Direct \\\\")
     lines.append("\\midrule")
 
     for name, stats in [("HumanEval", he_stats), ("LiveCodeBench", lcb_stats), ("ClassEval", ce_stats)]:
@@ -504,7 +504,7 @@ def main():
 
         print(f"\n{name}:")
 
-        # Calculate BDD advantage
+        # Calculate TCGP advantage
         by_model = defaultdict(dict)
         for r in results:
             by_model[r.model][r.condition] = r
@@ -526,8 +526,8 @@ def main():
 
         total = bdd_wins + cot_wins + ties
         if total > 0:
-            print(f"  BDD > CoT: {bdd_wins}/{total} ({bdd_wins/total*100:.0f}%)")
-            print(f"  CoT > BDD: {cot_wins}/{total} ({cot_wins/total*100:.0f}%)")
+            print(f"  TCGP > CoT: {bdd_wins}/{total} ({bdd_wins/total*100:.0f}%)")
+            print(f"  CoT > TCGP: {cot_wins}/{total} ({cot_wins/total*100:.0f}%)")
             print(f"  Ties (±1%): {ties}/{total}")
 
 

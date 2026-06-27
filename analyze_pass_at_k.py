@@ -5,7 +5,7 @@ Analyze DevEval Pass@k evaluation results.
 Parses test_output.jsonl files from DevEval evaluation and computes:
 - Pass@1 rates with 95% Wilson confidence intervals
 - Breakdown by status (Pass, Error, TimeOut, OOM)
-- BDD vs No-BDD comparison with effect sizes
+- TCGP vs No-TCGP comparison with effect sizes
 - LaTeX table for publication
 """
 
@@ -116,10 +116,10 @@ def generate_comparison_report(bdd: EvalResults, no_bdd: EvalResults) -> str:
     """Generate comparison report text."""
     lines = [
         "=" * 70,
-        "PASS@1 EVALUATION RESULTS: BDD vs No-BDD",
+        "PASS@1 EVALUATION RESULTS: TCGP vs No-TCGP",
         "=" * 70,
         "",
-        f"{'Metric':<25} {'BDD':<20} {'No-BDD':<20}",
+        f"{'Metric':<25} {'TCGP':<20} {'No-TCGP':<20}",
         "-" * 65,
         f"{'Samples':<25} {bdd.total:<20} {no_bdd.total:<20}",
         f"{'Passed':<25} {bdd.passed:<20} {no_bdd.passed:<20}",
@@ -140,18 +140,18 @@ def generate_comparison_report(bdd: EvalResults, no_bdd: EvalResults) -> str:
         "",
         "STATISTICAL COMPARISON",
         "-" * 65,
-        f"Pass@1 Difference: {diff:+.1%} (BDD - No-BDD)",
+        f"Pass@1 Difference: {diff:+.1%} (TCGP - No-TCGP)",
         f"Cohen's h: {h:.3f} ({magnitude} effect)",
         "",
     ])
 
     # Interpretation
     if diff > 0:
-        lines.append(f"BDD shows {abs(diff):.1%} HIGHER Pass@1 than direct prompting")
+        lines.append(f"TCGP shows {abs(diff):.1%} HIGHER Pass@1 than direct prompting")
     elif diff < 0:
-        lines.append(f"BDD shows {abs(diff):.1%} LOWER Pass@1 than direct prompting")
+        lines.append(f"TCGP shows {abs(diff):.1%} LOWER Pass@1 than direct prompting")
     else:
-        lines.append("BDD and direct prompting show EQUAL Pass@1 rates")
+        lines.append("TCGP and direct prompting show EQUAL Pass@1 rates")
 
     return "\n".join(lines)
 
@@ -165,13 +165,13 @@ def generate_latex_table(bdd: EvalResults, no_bdd: EvalResults) -> str:
         "",
         "\\begin{table}[htbp]",
         "\\centering",
-        "\\caption{Pass@1 Functional Correctness: BDD vs Direct Prompting}",
+        "\\caption{Pass@1 Functional Correctness: TCGP vs Direct Prompting}",
         "\\label{tab:pass1}",
         "\\begin{tabular}{lcccc}",
         "\\toprule",
         "Method & n & Pass@1 & 95\\% CI & Errors \\\\",
         "\\midrule",
-        f"BDD & {bdd.total} & {bdd.pass_rate:.1%} & [{bdd.ci_lower:.1%}, {bdd.ci_upper:.1%}] & {bdd.errors} \\\\",
+        f"TCGP & {bdd.total} & {bdd.pass_rate:.1%} & [{bdd.ci_lower:.1%}, {bdd.ci_upper:.1%}] & {bdd.errors} \\\\",
         f"Direct & {no_bdd.total} & {no_bdd.pass_rate:.1%} & [{no_bdd.ci_lower:.1%}, {no_bdd.ci_upper:.1%}] & {no_bdd.errors} \\\\",
         "\\bottomrule",
         "\\end{tabular}",
@@ -206,11 +206,11 @@ def main():
     # Analyze both conditions
     bdd_results = analyze_condition(
         str(results_dir / "bdd_test_output.jsonl"),
-        "BDD"
+        "TCGP"
     )
     no_bdd_results = analyze_condition(
         str(results_dir / "no_bdd_test_output.jsonl"),
-        "No-BDD"
+        "No-TCGP"
     )
 
     if not bdd_results and not no_bdd_results:
@@ -224,7 +224,7 @@ def main():
     if bdd_results:
         report_lines.extend([
             "",
-            f"BDD Results:",
+            f"TCGP Results:",
             f"  Samples: {bdd_results.total}",
             f"  Pass@1: {bdd_results.pass_rate:.1%} [{bdd_results.ci_lower:.1%}, {bdd_results.ci_upper:.1%}]",
             f"  Errors: {bdd_results.errors}, Timeouts: {bdd_results.timeouts}, OOM: {bdd_results.oom}",
@@ -233,7 +233,7 @@ def main():
     if no_bdd_results:
         report_lines.extend([
             "",
-            f"No-BDD Results:",
+            f"No-TCGP Results:",
             f"  Samples: {no_bdd_results.total}",
             f"  Pass@1: {no_bdd_results.pass_rate:.1%} [{no_bdd_results.ci_lower:.1%}, {no_bdd_results.ci_upper:.1%}]",
             f"  Errors: {no_bdd_results.errors}, Timeouts: {no_bdd_results.timeouts}, OOM: {no_bdd_results.oom}",

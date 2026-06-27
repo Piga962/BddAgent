@@ -52,8 +52,8 @@ def get_tool_metadata(func, tool_name=None, description=None,
 def register_tool(tool_name=None, description=None, parameters_override=None, 
                  terminal=False, tags=None):
     """
-    Decorator to automatically register BDD tools with metadata extraction.
-    Perfect for BDD operations like parse_feature, generate_tests, implement_code.
+    Decorator to automatically register TCGP tools with metadata extraction.
+    Perfect for TCGP operations like parse_feature, generate_tests, implement_code.
     """
     def decorator(func):
         # Extract metadata using the helper function

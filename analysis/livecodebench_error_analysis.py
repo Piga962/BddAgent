@@ -194,7 +194,7 @@ def generate_report(results: List[dict], output_dir: Path):
         fig, axes = plt.subplots(1, 3, figsize=(15, 5))
 
         for idx, (condition, errors) in enumerate([
-            ('BDD', gpt4o_results['bdd_error_distribution']),
+            ('TCGP', gpt4o_results['bdd_error_distribution']),
             ('CoT', gpt4o_results['cot_error_distribution']),
             ('Direct', gpt4o_results['direct_error_distribution'])
         ]):
@@ -245,7 +245,7 @@ def generate_report(results: List[dict], output_dir: Path):
         for r in results:
             f.write(f"## {r['model']}\n\n")
             f.write(f"- **Problems**: {r['n_problems']}\n")
-            f.write(f"- **Pass Rates**: BDD={r['bdd_pass_rate']:.1%}, CoT={r['cot_pass_rate']:.1%}, Direct={r['direct_pass_rate']:.1%}\n\n")
+            f.write(f"- **Pass Rates**: TCGP={r['bdd_pass_rate']:.1%}, CoT={r['cot_pass_rate']:.1%}, Direct={r['direct_pass_rate']:.1%}\n\n")
 
             f.write("### Error Distribution (CoT)\n\n")
             for error_type, count in sorted(r['cot_error_distribution'].items(), key=lambda x: -x[1]):

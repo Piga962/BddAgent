@@ -4,7 +4,7 @@ Deep analysis of HumanEval results for paper improvement.
 
 Analyzes:
 1. Error categories (syntax, logic, edge cases, etc.)
-2. Token/cost overhead of BDD
+2. Token/cost overhead of TCGP
 3. Problem difficulty analysis
 """
 
@@ -101,7 +101,7 @@ def categorize_error(error_msg: str) -> str:
 
 
 def analyze_errors(bdd_results, no_bdd_results):
-    """Analyze error categories for BDD vs No-BDD."""
+    """Analyze error categories for TCGP vs No-TCGP."""
     print("\n" + "=" * 70)
     print("ERROR CATEGORY ANALYSIS")
     print("=" * 70)
@@ -123,7 +123,7 @@ def analyze_errors(bdd_results, no_bdd_results):
     # Sort by total frequency
     sorted_cats = sorted(all_cats, key=lambda c: bdd_errors[c] + no_bdd_errors[c], reverse=True)
 
-    print(f"\n{'Category':<25} {'BDD':<10} {'No-BDD':<10} {'Diff':<10}")
+    print(f"\n{'Category':<25} {'TCGP':<10} {'No-TCGP':<10} {'Diff':<10}")
     print("-" * 55)
 
     for cat in sorted_cats:
@@ -140,16 +140,16 @@ def analyze_errors(bdd_results, no_bdd_results):
     bdd_syntax = bdd_errors['SyntaxError'] + bdd_errors['IndentationError']
     no_bdd_syntax = no_bdd_errors['SyntaxError'] + no_bdd_errors['IndentationError']
 
-    print(f"\nSyntax/Indentation Errors: BDD={bdd_syntax}, No-BDD={no_bdd_syntax}")
+    print(f"\nSyntax/Indentation Errors: TCGP={bdd_syntax}, No-TCGP={no_bdd_syntax}")
     if no_bdd_syntax > 0:
         reduction = ((no_bdd_syntax - bdd_syntax) / no_bdd_syntax) * 100
-        print(f"  -> BDD reduces syntax errors by {reduction:.1f}%")
+        print(f"  -> TCGP reduces syntax errors by {reduction:.1f}%")
 
     # Logic errors
     bdd_logic = bdd_errors['AssertionError (Logic)'] + bdd_errors.get('WrongAnswer (Logic)', 0)
     no_bdd_logic = no_bdd_errors['AssertionError (Logic)'] + no_bdd_errors.get('WrongAnswer (Logic)', 0)
 
-    print(f"\nLogic Errors (Wrong Answer): BDD={bdd_logic}, No-BDD={no_bdd_logic}")
+    print(f"\nLogic Errors (Wrong Answer): TCGP={bdd_logic}, No-TCGP={no_bdd_logic}")
 
     return bdd_errors, no_bdd_errors
 
@@ -188,8 +188,8 @@ def analyze_tokens(bdd_results, no_bdd_results):
         token_overhead = ((avg_bdd_tokens - avg_no_bdd_tokens) / avg_no_bdd_tokens) * 100
 
         print(f"\nAverage Tokens per Problem:")
-        print(f"  BDD:     {avg_bdd_tokens:.0f} tokens")
-        print(f"  No-BDD:  {avg_no_bdd_tokens:.0f} tokens")
+        print(f"  TCGP:     {avg_bdd_tokens:.0f} tokens")
+        print(f"  No-TCGP:  {avg_no_bdd_tokens:.0f} tokens")
         print(f"  Overhead: +{token_overhead:.1f}%")
 
         # Cost estimate (Gemini 2.5 Flash pricing estimate)
@@ -200,8 +200,8 @@ def analyze_tokens(bdd_results, no_bdd_results):
         no_bdd_cost = (sum(no_bdd_tokens) / 1_000_000) * cost_per_1m
 
         print(f"\nEstimated Cost (at $0.15/1M tokens):")
-        print(f"  BDD:     ${bdd_cost:.4f} for {len(bdd_tokens)} problems")
-        print(f"  No-BDD:  ${no_bdd_cost:.4f} for {len(no_bdd_tokens)} problems")
+        print(f"  TCGP:     ${bdd_cost:.4f} for {len(bdd_tokens)} problems")
+        print(f"  No-TCGP:  ${no_bdd_cost:.4f} for {len(no_bdd_tokens)} problems")
 
     if bdd_duration and no_bdd_duration:
         avg_bdd_time = sum(bdd_duration) / len(bdd_duration)
@@ -209,8 +209,8 @@ def analyze_tokens(bdd_results, no_bdd_results):
         time_overhead = ((avg_bdd_time - avg_no_bdd_time) / avg_no_bdd_time) * 100
 
         print(f"\nAverage Time per Problem:")
-        print(f"  BDD:     {avg_bdd_time:.2f}s")
-        print(f"  No-BDD:  {avg_no_bdd_time:.2f}s")
+        print(f"  TCGP:     {avg_bdd_time:.2f}s")
+        print(f"  No-TCGP:  {avg_no_bdd_time:.2f}s")
         print(f"  Overhead: +{time_overhead:.1f}%")
 
     # Cost-benefit analysis
@@ -276,7 +276,7 @@ def analyze_difficulty(bdd_results, no_bdd_results):
         diff = get_problem_difficulty(r['task_id'])
         no_bdd_by_diff[diff].append(r)
 
-    print(f"\n{'Difficulty':<12} {'BDD Pass':<12} {'No-BDD Pass':<14} {'Improvement':<12} {'N':<6}")
+    print(f"\n{'Difficulty':<12} {'TCGP Pass':<12} {'No-TCGP Pass':<14} {'Improvement':<12} {'N':<6}")
     print("-" * 60)
 
     for diff in ['Easy', 'Medium', 'Hard']:
@@ -303,7 +303,7 @@ def analyze_difficulty(bdd_results, no_bdd_results):
     if hard_bdd and hard_no_bdd:
         hard_bdd_pass = sum(1 for r in hard_bdd if r.get('passed')) / len(hard_bdd) * 100
         hard_no_bdd_pass = sum(1 for r in hard_no_bdd if r.get('passed')) / len(hard_no_bdd) * 100
-        print(f"  BDD helps most on HARD problems: {hard_no_bdd_pass:.1f}% -> {hard_bdd_pass:.1f}%")
+        print(f"  TCGP helps most on HARD problems: {hard_no_bdd_pass:.1f}% -> {hard_bdd_pass:.1f}%")
 
     return bdd_by_diff, no_bdd_by_diff
 
@@ -331,7 +331,7 @@ def generate_latex_table(bdd_errors, no_bdd_errors):
 \\caption{Error category distribution on HumanEval (n=328 per condition).}\\label{tab:errors}
 \\begin{tabular}{lccc}
 \\toprule
-\\textbf{Category} & \\textbf{BDD} & \\textbf{No-BDD} & \\textbf{Diff} \\\\
+\\textbf{Category} & \\textbf{TCGP} & \\textbf{No-TCGP} & \\textbf{Diff} \\\\
 \\midrule""")
 
     for name, bdd_count, no_bdd_count in categories:
@@ -351,7 +351,7 @@ def main():
 
     # Load data
     bdd_results, no_bdd_results = load_results()
-    print(f"\nLoaded {len(bdd_results)} BDD results, {len(no_bdd_results)} No-BDD results")
+    print(f"\nLoaded {len(bdd_results)} TCGP results, {len(no_bdd_results)} No-TCGP results")
 
     # Run analyses
     bdd_errors, no_bdd_errors = analyze_errors(bdd_results, no_bdd_results)

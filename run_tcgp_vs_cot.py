@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 """
-BDD vs Chain-of-Thought vs Direct Prompting Comparison
+TCGP vs Chain-of-Thought vs Direct Prompting Comparison
 
-This script isolates whether BDD's improvement comes from:
-1. The structured BDD format specifically, or
+This script isolates whether TCGP's improvement comes from:
+1. The structured TCGP format specifically, or
 2. Simply giving the model more "thinking" tokens
 
 Three conditions:
-- BDD: Generate test scenarios → use them to guide code generation
+- TCGP: Generate test scenarios → use them to guide code generation
 - CoT: "Think step by step" reasoning → generate code
 - Direct: Simple prompt without extra reasoning
 
-Key design: BDD and CoT use roughly equivalent token budgets.
+Key design: TCGP and CoT use roughly equivalent token budgets.
 """
 
 import json
@@ -86,7 +86,7 @@ def get_client(provider: str = "gemini"):
 
 
 class PromptComparisonAgent:
-    """Agent for comparing BDD vs CoT vs Direct prompting."""
+    """Agent for comparing TCGP vs CoT vs Direct prompting."""
 
     def __init__(self, model: str = "gemini-2.5-flash", provider: str = "gemini", seed: Optional[int] = 42):
         self.client = get_client(provider)
@@ -216,15 +216,15 @@ class PromptComparisonAgent:
                 raise Exception(f"Hard timeout (90s) on {self.model} — client rotated")
             return response.choices[0].message.content, response.usage.total_tokens
 
-    def generate_with_bdd(self, prompt: str, entry_point: str) -> Tuple[str, float, int, str]:
-        """Generate code with BDD methodology.
+    def generate_with_tcgp(self, prompt: str, entry_point: str) -> Tuple[str, float, int, str]:
+        """Generate code with TCGP methodology.
 
         Returns: (code, duration, tokens, reasoning)
         """
         start = time.time()
         total_tokens = 0
 
-        # Step 1: Generate BDD scenarios
+        # Step 1: Generate TCGP scenarios
         bdd_prompt = f"""Analyze this function signature and docstring, then generate CONCRETE test scenarios.
 
 {prompt}
@@ -251,7 +251,7 @@ Use REAL values, not placeholders. Extract examples from the docstring if availa
         bdd_scenarios, tokens = self._call_llm(bdd_prompt, temperature=0.3, max_tokens=600)
         total_tokens += tokens
 
-        # Step 2: Generate code with BDD context
+        # Step 2: Generate code with TCGP context
         code_prompt = f"""Complete this Python function. The function signature and docstring are provided.
 
 {prompt}
@@ -278,14 +278,14 @@ Return ONLY the implementation code, no explanations.
     def generate_with_cot(self, prompt: str, entry_point: str) -> Tuple[str, float, int, str]:
         """Generate code with Chain-of-Thought reasoning.
 
-        Uses similar token budget to BDD by asking for step-by-step reasoning.
+        Uses similar token budget to TCGP by asking for step-by-step reasoning.
 
         Returns: (code, duration, tokens, reasoning)
         """
         start = time.time()
         total_tokens = 0
 
-        # Step 1: Generate reasoning (similar token budget to BDD scenarios)
+        # Step 1: Generate reasoning (similar token budget to TCGP scenarios)
         cot_prompt = f"""Analyze this function and think step by step about how to implement it.
 
 {prompt}
@@ -359,7 +359,7 @@ Return ONLY the implementation code, no explanations.
         """Generate code with Plan-and-Solve prompting (improved CoT baseline).
 
         This is the E1 ablation - a stronger CoT variant that should be
-        compared against BDD to ensure fair comparison.
+        compared against TCGP to ensure fair comparison.
 
         Returns: (code, duration, tokens, reasoning)
         """
@@ -385,7 +385,7 @@ Return ONLY the implementation code, no explanations.
         """Generate code with Extended Direct prompting (token-matched control).
 
         This is the E2a ablation - adds thinking space to Direct prompting
-        to control for token count. Tests whether BDD improvement comes
+        to control for token count. Tests whether TCGP improvement comes
         from methodology or just more tokens.
 
         Returns: (code, duration, tokens)
@@ -469,11 +469,11 @@ Return ONLY the implementation code, no explanations.
             return self._extract_body(blocks[-1])
         return self._extract_body(response)
 
-    def generate_with_minimal_bdd(self, prompt: str, entry_point: str) -> Tuple[str, float, int, str]:
-        """Generate code with Minimal BDD (token-matched control).
+    def generate_with_minimal_tcgp(self, prompt: str, entry_point: str) -> Tuple[str, float, int, str]:
+        """Generate code with Minimal TCGP (token-matched control).
 
-        This is the E2b ablation - reduces BDD to only 2 scenarios to
-        match Direct token count. Tests whether BDD's structure matters
+        This is the E2b ablation - reduces TCGP to only 2 scenarios to
+        match Direct token count. Tests whether TCGP's structure matters
         or just having test cases.
 
         Returns: (code, duration, tokens, scenarios)
@@ -643,10 +643,10 @@ def run_comparison(
     seed: int = 42,
     output_dir: str = "results/bdd_vs_cot"
 ):
-    """Run BDD vs CoT vs Direct comparison study."""
+    """Run TCGP vs CoT vs Direct comparison study."""
 
     print("=" * 70, flush=True)
-    print("BDD vs CHAIN-OF-THOUGHT vs DIRECT COMPARISON", flush=True)
+    print("TCGP vs CHAIN-OF-THOUGHT vs DIRECT COMPARISON", flush=True)
     print("=" * 70, flush=True)
     print(f"Model: {model}", flush=True)
     print(f"Provider: {provider}", flush=True)
@@ -696,17 +696,17 @@ def run_comparison(
 
         print(f"\n[{i+1}/{len(problems)}] {task_id}", flush=True)
 
-        # Generate with BDD
+        # Generate with TCGP
         try:
-            code, duration, tokens, reasoning = agent.generate_with_bdd(prompt, entry_point)
+            code, duration, tokens, reasoning = agent.generate_with_tcgp(prompt, entry_point)
             full_code = prompt + code
             passed, error = execute_test(full_code, test, entry_point)
 
             if passed:
                 results["bdd"]["passed"] += 1
-                print(f"  BDD:    PASS ({tokens} tokens)", flush=True)
+                print(f"  TCGP:    PASS ({tokens} tokens)", flush=True)
             else:
-                print(f"  BDD:    FAIL - {error[:40]}", flush=True)
+                print(f"  TCGP:    FAIL - {error[:40]}", flush=True)
 
             results["bdd"]["tokens"].append(tokens)
             bdd_result = {
@@ -723,7 +723,7 @@ def run_comparison(
             jsonl_files["bdd"].write(json.dumps(bdd_result) + '\n')
             jsonl_files["bdd"].flush()
         except Exception as e:
-            print(f"  BDD:    ERROR - {e}", flush=True)
+            print(f"  TCGP:    ERROR - {e}", flush=True)
             bdd_result = {
                 "task_id": task_id,
                 "condition": "bdd",
@@ -832,7 +832,7 @@ def run_comparison(
 
     # Print summary
     print("\n" + "=" * 70, flush=True)
-    print("BDD vs COT vs DIRECT COMPARISON RESULTS", flush=True)
+    print("TCGP vs COT vs DIRECT COMPARISON RESULTS", flush=True)
     print("=" * 70, flush=True)
     print(f"\n{'Condition':<12} {'Pass@1':<12} {'95% CI':<22} {'Passed':<10} {'Avg Tokens':<12}", flush=True)
     print("-" * 70, flush=True)
@@ -849,23 +849,23 @@ def run_comparison(
     cot_direct_d = cohens_d(n, stats["cot"]["passed"], n, stats["direct"]["passed"])
 
     print(f"\nPairwise Comparisons:", flush=True)
-    print(f"  BDD vs CoT:    {(stats['bdd']['rate'] - stats['cot']['rate'])*100:+.1f}%  (Cohen's d = {bdd_cot_d:.3f})", flush=True)
-    print(f"  BDD vs Direct: {(stats['bdd']['rate'] - stats['direct']['rate'])*100:+.1f}%  (Cohen's d = {bdd_direct_d:.3f})", flush=True)
+    print(f"  TCGP vs CoT:    {(stats['bdd']['rate'] - stats['cot']['rate'])*100:+.1f}%  (Cohen's d = {bdd_cot_d:.3f})", flush=True)
+    print(f"  TCGP vs Direct: {(stats['bdd']['rate'] - stats['direct']['rate'])*100:+.1f}%  (Cohen's d = {bdd_direct_d:.3f})", flush=True)
     print(f"  CoT vs Direct: {(stats['cot']['rate'] - stats['direct']['rate'])*100:+.1f}%  (Cohen's d = {cot_direct_d:.3f})", flush=True)
 
     # Key insight
     print(f"\n" + "=" * 70, flush=True)
     print("KEY INSIGHT:", flush=True)
     if stats["bdd"]["rate"] > stats["cot"]["rate"]:
-        print(f"  BDD outperforms CoT by {(stats['bdd']['rate'] - stats['cot']['rate'])*100:.1f}% despite similar token usage.", flush=True)
-        print(f"  This suggests the structured BDD format provides value beyond just", flush=True)
+        print(f"  TCGP outperforms CoT by {(stats['bdd']['rate'] - stats['cot']['rate'])*100:.1f}% despite similar token usage.", flush=True)
+        print(f"  This suggests the structured TCGP format provides value beyond just", flush=True)
         print(f"  'more thinking tokens'.", flush=True)
     elif stats["cot"]["rate"] > stats["bdd"]["rate"]:
-        print(f"  CoT outperforms BDD by {(stats['cot']['rate'] - stats['bdd']['rate'])*100:.1f}%.", flush=True)
+        print(f"  CoT outperforms TCGP by {(stats['cot']['rate'] - stats['bdd']['rate'])*100:.1f}%.", flush=True)
         print(f"  This suggests general reasoning may be more effective than", flush=True)
-        print(f"  structured BDD scenarios for code generation.", flush=True)
+        print(f"  structured TCGP scenarios for code generation.", flush=True)
     else:
-        print(f"  BDD and CoT show similar performance.", flush=True)
+        print(f"  TCGP and CoT show similar performance.", flush=True)
         print(f"  Both structured reasoning approaches outperform direct prompting.", flush=True)
     print("=" * 70, flush=True)
 
@@ -917,17 +917,17 @@ def generate_latex_table(summary: dict) -> str:
 
     table = f"""\\begin{{table}}[t]
 \\centering
-\\caption{{BDD vs Chain-of-Thought vs Direct Prompting on HumanEval (n={n}). BDD outperforms CoT despite similar token usage, suggesting structured test scenarios provide value beyond general reasoning.}}\\label{{tab:bdd-vs-cot}}
+\\caption{{TCGP vs Chain-of-Thought vs Direct Prompting on HumanEval (n={n}). TCGP outperforms CoT despite similar token usage, suggesting structured test scenarios provide value beyond general reasoning.}}\\label{{tab:bdd-vs-cot}}
 \\begin{{tabular}}{{lcccc}}
 \\toprule
 \\textbf{{Condition}} & \\textbf{{Pass@1}} & \\textbf{{95\\% CI}} & \\textbf{{Passed}} & \\textbf{{Avg Tokens}} \\\\
 \\midrule
 Direct & {conds['direct']['pass_rate']*100:.1f}\\% & [{conds['direct']['ci_lower']*100:.1f}\\%, {conds['direct']['ci_upper']*100:.1f}\\%] & {conds['direct']['passed']}/{n} & {conds['direct']['avg_tokens']:.0f} \\\\
 Chain-of-Thought & {conds['cot']['pass_rate']*100:.1f}\\% & [{conds['cot']['ci_lower']*100:.1f}\\%, {conds['cot']['ci_upper']*100:.1f}\\%] & {conds['cot']['passed']}/{n} & {conds['cot']['avg_tokens']:.0f} \\\\
-BDD (Ours) & {conds['bdd']['pass_rate']*100:.1f}\\% & [{conds['bdd']['ci_lower']*100:.1f}\\%, {conds['bdd']['ci_upper']*100:.1f}\\%] & {conds['bdd']['passed']}/{n} & {conds['bdd']['avg_tokens']:.0f} \\\\
+TCGP (Ours) & {conds['bdd']['pass_rate']*100:.1f}\\% & [{conds['bdd']['ci_lower']*100:.1f}\\%, {conds['bdd']['ci_upper']*100:.1f}\\%] & {conds['bdd']['passed']}/{n} & {conds['bdd']['avg_tokens']:.0f} \\\\
 \\midrule
 \\multicolumn{{5}}{{l}}{{\\textit{{Pairwise comparisons (Cohen's d):}}}} \\\\
-\\multicolumn{{5}}{{l}}{{BDD vs CoT: {summary['pairwise']['bdd_vs_cot']['difference']*100:+.1f}\\% ($d$={summary['pairwise']['bdd_vs_cot']['cohens_d']:.2f}), BDD vs Direct: {summary['pairwise']['bdd_vs_direct']['difference']*100:+.1f}\\% ($d$={summary['pairwise']['bdd_vs_direct']['cohens_d']:.2f})}} \\\\
+\\multicolumn{{5}}{{l}}{{TCGP vs CoT: {summary['pairwise']['bdd_vs_cot']['difference']*100:+.1f}\\% ($d$={summary['pairwise']['bdd_vs_cot']['cohens_d']:.2f}), TCGP vs Direct: {summary['pairwise']['bdd_vs_direct']['difference']*100:+.1f}\\% ($d$={summary['pairwise']['bdd_vs_direct']['cohens_d']:.2f})}} \\\\
 \\bottomrule
 \\end{{tabular}}
 \\end{{table}}"""
@@ -1037,7 +1037,7 @@ def run_ablation(
                 code, duration, tokens = agent.generate_with_extended_direct(prompt, entry_point)
                 reasoning = None
             elif condition == 'minimal_bdd':
-                code, duration, tokens, reasoning = agent.generate_with_minimal_bdd(prompt, entry_point)
+                code, duration, tokens, reasoning = agent.generate_with_minimal_tcgp(prompt, entry_point)
             elif condition == 'hybrid':
                 code, duration, tokens, reasoning = agent.generate_with_hybrid(prompt, entry_point)
             elif condition == 'self_consistency':
@@ -1182,7 +1182,7 @@ def run_ablation(
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(description="BDD vs CoT vs Direct Comparison")
+    parser = argparse.ArgumentParser(description="TCGP vs CoT vs Direct Comparison")
     parser.add_argument("--model", default="gemini-2.5-flash", help="Model to use")
     parser.add_argument("--provider", default="gemini", choices=["azure", "azure_models", "azure_responses", "openai", "anthropic", "gemini"])
     parser.add_argument("--samples", type=int, default=None, help="Number of samples (default: all 164)")
