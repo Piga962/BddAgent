@@ -1,3 +1,14 @@
 .env
 .venv
 /results
+
+# OS junk
+.DS_Store
+**/.DS_Store
+
+# Large downloaded datasets (not for version control)
+/data/DevEval-main/
+/data/deveval_data.zip
+
+# Generated run logs
+/logs/
