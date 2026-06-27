@@ -187,12 +187,42 @@ _THREE_BENCH_MODELS = {
 }
 
 
+def build_livecodebench_errors():
+    """fig8 outcome distribution per model: {disp: {cot/tcgp/direct: {cat: n}}}.
+    Source: results/analysis_output/error_analysis_results.json (a per-model list).
+    """
+    rows = json.loads((RESULTS / "analysis_output" / "error_analysis_results.json").read_text())
+    cats = ("PASSED", "NO_OUTPUT", "WRONG_ANSWER", "OTHER_ERROR")
+
+    def norm(dist):
+        # zero-fill the 4 plotted categories; fold any extra (e.g. RUNTIME_ERROR)
+        # into OTHER_ERROR, as the paper does.
+        n = {c: dist.get(c, 0) for c in cats}
+        for k, v in dist.items():
+            if k not in cats:
+                n["OTHER_ERROR"] += v
+        return n
+
+    out = {}
+    for r in rows:
+        disp = SUITE_DISPLAY.get(r.get("model"))
+        if not disp:
+            continue
+        out[disp] = {
+            "cot": norm(r["cot_error_distribution"]),
+            "tcgp": norm(r["bdd_error_distribution"]),  # 'bdd' on disk == TCGP in the paper
+            "direct": norm(r["direct_error_distribution"]),
+        }
+    return out
+
+
 def build_data():
     md = build_models_data()
     return {
         "MODELS_DATA": md,
         "ROBUSTNESS_DATA": build_robustness(),
         "THREE_BENCH_DATA": build_three_bench(md),
+        "LIVECODEBENCH_ERRORS": build_livecodebench_errors(),
         "_unverified": UNVERIFIED,
     }
 
@@ -224,7 +254,7 @@ def main():
     data = build_data()
     if "--check" in sys.argv:
         from generate_figures import (_PAPER_MODELS_DATA, _PAPER_ROBUSTNESS_DATA,
-                                       _PAPER_THREE_BENCH_DATA)
+                                       _PAPER_THREE_BENCH_DATA, _PAPER_LIVECODEBENCH_ERRORS)
         print("Cross-checking results/ against the paper literals in generate_figures.py ...")
         pass_mism, tok_warn = _compare("MODELS_DATA", data["MODELS_DATA"], _PAPER_MODELS_DATA)
         r_mism, _ = _compare("ROBUSTNESS_DATA", data["ROBUSTNESS_DATA"], _PAPER_ROBUSTNESS_DATA)
@@ -246,11 +276,20 @@ def main():
                     tb_mism += 1
                     print(f"  [THREE_BENCH] {m}/{bench}: paper={p} results={d}")
 
-        total_fail = pass_mism + r_mism + tb_mism
+        # fig8 LiveCodeBench outcome distribution: exact dict match per model
+        err_mism = 0
+        de, pe = data["LIVECODEBENCH_ERRORS"], _PAPER_LIVECODEBENCH_ERRORS
+        for m in sorted(set(de) | set(pe)):
+            if de.get(m) != pe.get(m):
+                err_mism += 1
+                print(f"  [LIVECODEBENCH_ERRORS] {m}: results/ differ from paper literal")
+
+        total_fail = pass_mism + r_mism + tb_mism + err_mism
         print()
         if total_fail:
-            print(f"FAIL: {total_fail} Pass@1 mismatch(es) vs the paper "
-                  f"(MODELS_DATA={pass_mism}, ROBUSTNESS={r_mism}, THREE_BENCH={tb_mism}).")
+            print(f"FAIL: {total_fail} mismatch(es) vs the paper "
+                  f"(MODELS_DATA={pass_mism}, ROBUSTNESS={r_mism}, THREE_BENCH={tb_mism}, "
+                  f"LIVECODEBENCH_ERRORS={err_mism}).")
         else:
             warns = []
             if tok_warn: warns.append(f"{tok_warn} token-avg diff")

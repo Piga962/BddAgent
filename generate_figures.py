@@ -84,6 +84,8 @@ def _apply_results_overrides():
         THREE_BENCH_DATA.update({k: {kk: (tuple(vv) if vv is not None else None)
                                      for kk, vv in v.items()}
                                  for k, v in data['THREE_BENCH_DATA'].items()})
+    if data.get('LIVECODEBENCH_ERRORS'):
+        LIVECODEBENCH_ERRORS.update(data['LIVECODEBENCH_ERRORS'])
 
 # Figures are written here. Defaults to a local ./figures/ dir so the package is
 # self-contained on a fresh clone; override with --out or the FIGURES_DIR env var.
@@ -424,7 +426,7 @@ def fig7_winner_pie():
 # LiveCodeBench failure-mode distributions (n=50 per model except where noted).
 # Categories: PASSED (correct), NO_OUTPUT (token exhaustion / no executable code),
 # WRONG_ANSWER, OTHER_ERROR (runtime / syntax). Source: results/analysis_output/error_analysis_results.json
-LIVECODEBENCH_ERRORS = {
+_PAPER_LIVECODEBENCH_ERRORS = {
     'GPT-4o':       {'cot':    {'PASSED': 1,  'NO_OUTPUT': 37, 'WRONG_ANSWER': 8,  'OTHER_ERROR': 4},
                      'tcgp':   {'PASSED': 8,  'NO_OUTPUT': 10, 'WRONG_ANSWER': 13, 'OTHER_ERROR': 19},
                      'direct': {'PASSED': 8,  'NO_OUTPUT': 16, 'WRONG_ANSWER': 10, 'OTHER_ERROR': 16}},
@@ -441,6 +443,9 @@ LIVECODEBENCH_ERRORS = {
                          'tcgp':   {'PASSED': 33, 'NO_OUTPUT': 8,  'WRONG_ANSWER': 5, 'OTHER_ERROR': 4},
                          'direct': {'PASSED': 15, 'NO_OUTPUT': 19, 'WRONG_ANSWER': 5, 'OTHER_ERROR': 11}},
 }
+
+LIVECODEBENCH_ERRORS = {k: {kk: dict(vv) for kk, vv in v.items()}
+                        for k, v in _PAPER_LIVECODEBENCH_ERRORS.items()}
 
 # Per-model HumanEval / ClassEval / LiveCodeBench pass rates (TCGP, CoT, Direct).
 # Source: main paper Tables 4 and 7.

@@ -1,4 +1,106 @@
 {
+  "LIVECODEBENCH_ERRORS": {
+    "GPT-4.1": {
+      "cot": {
+        "NO_OUTPUT": 33,
+        "OTHER_ERROR": 2,
+        "PASSED": 8,
+        "WRONG_ANSWER": 7
+      },
+      "direct": {
+        "NO_OUTPUT": 20,
+        "OTHER_ERROR": 12,
+        "PASSED": 8,
+        "WRONG_ANSWER": 10
+      },
+      "tcgp": {
+        "NO_OUTPUT": 14,
+        "OTHER_ERROR": 6,
+        "PASSED": 19,
+        "WRONG_ANSWER": 11
+      }
+    },
+    "GPT-4o": {
+      "cot": {
+        "NO_OUTPUT": 37,
+        "OTHER_ERROR": 4,
+        "PASSED": 1,
+        "WRONG_ANSWER": 8
+      },
+      "direct": {
+        "NO_OUTPUT": 16,
+        "OTHER_ERROR": 16,
+        "PASSED": 8,
+        "WRONG_ANSWER": 10
+      },
+      "tcgp": {
+        "NO_OUTPUT": 10,
+        "OTHER_ERROR": 19,
+        "PASSED": 8,
+        "WRONG_ANSWER": 13
+      }
+    },
+    "GPT-5.3-codex": {
+      "cot": {
+        "NO_OUTPUT": 0,
+        "OTHER_ERROR": 48,
+        "PASSED": 2,
+        "WRONG_ANSWER": 0
+      },
+      "direct": {
+        "NO_OUTPUT": 0,
+        "OTHER_ERROR": 16,
+        "PASSED": 27,
+        "WRONG_ANSWER": 7
+      },
+      "tcgp": {
+        "NO_OUTPUT": 0,
+        "OTHER_ERROR": 31,
+        "PASSED": 13,
+        "WRONG_ANSWER": 6
+      }
+    },
+    "Gemini-3.1-Flash-Lite-Preview": {
+      "cot": {
+        "NO_OUTPUT": 10,
+        "OTHER_ERROR": 4,
+        "PASSED": 30,
+        "WRONG_ANSWER": 6
+      },
+      "direct": {
+        "NO_OUTPUT": 19,
+        "OTHER_ERROR": 11,
+        "PASSED": 15,
+        "WRONG_ANSWER": 5
+      },
+      "tcgp": {
+        "NO_OUTPUT": 8,
+        "OTHER_ERROR": 4,
+        "PASSED": 33,
+        "WRONG_ANSWER": 5
+      }
+    },
+    "gpt-35-turbo": {
+      "cot": {
+        "NO_OUTPUT": 2,
+        "OTHER_ERROR": 25,
+        "PASSED": 12,
+        "WRONG_ANSWER": 11
+      },
+      "direct": {
+        "NO_OUTPUT": 6,
+        "OTHER_ERROR": 25,
+        "PASSED": 11,
+        "WRONG_ANSWER": 8
+      },
+      "tcgp": {
+        "NO_OUTPUT": 2,
+        "OTHER_ERROR": 23,
+        "PASSED": 15,
+        "WRONG_ANSWER": 10
+      }
+    }
+  },
   "MODELS_DATA": {
     "Claude-Haiku-4.5": {
       "bdd": 18.9,
