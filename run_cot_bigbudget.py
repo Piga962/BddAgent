@@ -138,17 +138,42 @@ def main():
     summary = {}
     for condition in args.conditions:
         for budget in args.budgets:
-            fp = OUT_DIR / f"{condition}_{args.model}_{budget}_{ts}.jsonl"
-            passed = no_out = 0
-            with open(fp, "w") as fh:
-                for i, problem in enumerate(dataset):
-                    r = evaluate(problem, condition, args.model, args.provider, budget)
-                    fh.write(json.dumps(r) + "\n")
-                    passed += int(r["passed"])
-                    no_out += int(r["no_output"])
-                    mark = "P" if r["passed"] else ("_" if r["no_output"] else ".")
-                    print(f"  [{condition} @ {budget}] {i+1}/{n} {mark}", end="\r", flush=True)
-            print()
+            # STABLE filename (no timestamp) so a re-run resumes the same file.
+            fp = OUT_DIR / f"{condition}_{args.model}_{budget}.jsonl"
+
+            # Resume: load already-completed problems, dropping any partial
+            # trailing line, and rewrite the file clean so append stays valid.
+            valid = []
+            if fp.exists():
+                for line in fp.read_text().splitlines():
+                    line = line.strip()
+                    if not line:
+                        continue
+                    try:
+                        valid.append(json.loads(line))
+                    except json.JSONDecodeError:
+                        break  # stop at first corrupt/partial line
+                fp.write_text("".join(json.dumps(r) + "\n" for r in valid))
+            done = len(valid)
+            passed = sum(int(r["passed"]) for r in valid)
+            no_out = sum(int(r["no_output"]) for r in valid)
+            if done >= n:
+                print(f"  [resume] {condition} @ {budget}: complete ({done}/{n})")
+            else:
+                if done:
+                    print(f"  [resume] {condition} @ {budget}: continuing from {done}/{n}")
+                with open(fp, "a") as fh:
+                    for i, problem in enumerate(dataset):
+                        if i < done:
+                            continue
+                        r = evaluate(problem, condition, args.model, args.provider, budget)
+                        fh.write(json.dumps(r) + "\n")
+                        fh.flush()
+                        passed += int(r["passed"])
+                        no_out += int(r["no_output"])
+                        mark = "P" if r["passed"] else ("_" if r["no_output"] else ".")
+                        print(f"  [{condition} @ {budget}] {i+1}/{n} {mark}", end="\r", flush=True)
+                print()
             summary[(condition, budget)] = {
                 "pass_rate": passed / n if n else 0.0,
                 "no_output_rate": no_out / n if n else 0.0,

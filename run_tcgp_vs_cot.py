@@ -499,9 +499,16 @@ Return ONLY the implementation code, no explanations.
     def _extract_body(self, code: str) -> str:
         """Extract and clean function body from LLM response."""
         # Remove markdown code blocks
-        code = re.sub(r'```python\s*\n?', '', code)
-        code = re.sub(r'```\s*\n?', '', code)
-        code = code.strip()
+        # Strip code fences WITHOUT consuming the following line's indentation.
+        # Using \s* here is a bug: \s matches newlines AND spaces, so it eats the
+        # first code line's leading indentation, corrupting the body structure.
+        # Restrict to spaces/tabs on the fence line, then an optional newline.
+        code = re.sub(r'```[a-zA-Z0-9]*[ \t]*\n?', '', code)
+        code = re.sub(r'[ \t]*```[ \t]*\n?', '', code)
+        # Strip surrounding blank lines only -- NOT a full .strip(), which would
+        # remove the first line's leading indentation and corrupt the relative
+        # structure of a body-only ("Direct"-style) response.
+        code = code.strip('\n')
 
         if not code:
             return "    pass"
@@ -520,15 +527,32 @@ Return ONLY the implementation code, no explanations.
         if not lines:
             return "    pass"
 
-        # Try to fix indentation by inferring structure from code
-        result = self._fix_indentation(lines)
+        # PRIMARY: preserve the model's own indentation, re-based so the
+        # shallowest non-empty body line sits at 4 spaces. This keeps
+        # multi-level structure intact (e.g. a trailing `return False` at
+        # function-body level) instead of letting the lossy keyword heuristic
+        # flatten it into the preceding block.
+        non_empty = [ln for ln in lines if ln.strip()]
+        if non_empty:
+            min_indent = min(len(ln) - len(ln.lstrip()) for ln in non_empty)
+            rebased = '\n'.join(
+                ('    ' + ln[min_indent:]) if ln.strip() else ''
+                for ln in lines
+            )
+            try:
+                ast.parse("def _test():\n" + rebased)
+                return rebased if rebased.strip() else "    pass"
+            except SyntaxError:
+                pass  # model's indentation didn't parse; fall through
 
-        # Validate syntax
+        # FALLBACK: infer indentation from Python keywords (lossy; used only
+        # when the model's own indentation does not parse).
+        result = self._fix_indentation(lines)
         try:
             ast.parse("def _test():\n" + result)
             return result if result.strip() else "    pass"
         except SyntaxError:
-            # Fallback: just add 4 spaces to every line
+            # Last resort: flatten every line to a single 4-space level.
             result = '\n'.join('    ' + line.strip() if line.strip() else '' for line in lines)
             return result if result.strip() else "    pass"
 
@@ -675,21 +699,53 @@ def run_comparison(
     output_path = Path(output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
 
-    # Create file handles for incremental writing
-    jsonl_files = {
-        condition: open(output_path / f"{condition}_{model}_{timestamp}.jsonl", 'w')
-        for condition in ["bdd", "cot", "direct"]
-    }
+    conditions = ["bdd", "cot", "direct"]
+    # STABLE per-(model, seed) filenames enable problem-level resume across runs
+    # (e.g. when a background job is killed by a wall-clock limit mid-seed).
+    file_paths = {c: output_path / f"{c}_{model}_s{seed}.jsonl" for c in conditions}
 
-    # Results storage
-    results = {
-        "bdd": {"results": [], "passed": 0, "tokens": []},
-        "cot": {"results": [], "passed": 0, "tokens": []},
-        "direct": {"results": [], "passed": 0, "tokens": []}
-    }
+    # --- RESUME: recover already-completed problems ---------------------------
+    # Load valid records per condition (dropping any partial trailing line). A
+    # problem counts as DONE only if all three conditions recorded it; half-done
+    # problems are discarded so re-running them cannot create duplicate records.
+    loaded = {c: {} for c in conditions}  # task_id -> record
+    for c in conditions:
+        if file_paths[c].exists():
+            for line in file_paths[c].read_text().splitlines():
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    rec = json.loads(line)
+                except json.JSONDecodeError:
+                    break  # stop at first corrupt/partial line
+                if rec.get("task_id"):
+                    loaded[c][rec["task_id"]] = rec
+    done_ids = set(loaded["bdd"]) & set(loaded["cot"]) & set(loaded["direct"])
+
+    # Results storage, pre-populated from completed problems.
+    results = {c: {"results": [], "passed": 0, "tokens": []} for c in conditions}
+    for c in conditions:
+        # Rewrite each file with only fully-completed problems (clean, no partials)
+        with open(file_paths[c], 'w') as fh:
+            for tid in done_ids:
+                rec = loaded[c][tid]
+                fh.write(json.dumps(rec) + '\n')
+                results[c]["results"].append(rec)
+                if rec.get("passed"):
+                    results[c]["passed"] += 1
+                if "tokens_used" in rec:
+                    results[c]["tokens"].append(rec.get("tokens_used", 0))
+    if done_ids:
+        print(f"[resume] {len(done_ids)} problems already complete; skipping them.", flush=True)
+
+    # Open for append now that files hold only clean, completed records.
+    jsonl_files = {c: open(file_paths[c], 'a') for c in conditions}
 
     for i, problem in enumerate(problems):
         task_id = problem['task_id']
+        if task_id in done_ids:
+            continue
         prompt = problem['prompt']
         test = problem['test']
         entry_point = problem['entry_point']

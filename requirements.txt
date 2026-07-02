@@ -59,3 +59,6 @@ scipy==1.13.1
 matplotlib==3.9.4
 datasets==4.5.0
 evalplus==0.3.1
+
+# Used by run_tcgp_vs_cot.py to normalize generated code before execution.
+autopep8==2.3.1

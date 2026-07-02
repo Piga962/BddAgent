@@ -55,8 +55,25 @@ HERE = Path(__file__).parent
 COMPARISON_SCRIPT = HERE / "run_tcgp_vs_cot.py"
 BDD_VS_COT_DIR = HERE / "results" / "bdd_vs_cot"
 OUT_DIR = HERE / "results" / "multiseed"
+PROGRESS_FILE = OUT_DIR / "_progress.json"
 
 CONDITIONS = ["bdd", "cot", "direct"]  # "bdd" is TCGP in the harness's naming
+
+
+def load_progress() -> dict:
+    """Checkpoint map: 'model|seed' -> path of the summary file that run produced.
+    Lets a re-run of the same command skip already-completed (model, seed) pairs."""
+    if PROGRESS_FILE.exists():
+        try:
+            return json.loads(PROGRESS_FILE.read_text())
+        except Exception:
+            return {}
+    return {}
+
+
+def save_progress(progress: dict) -> None:
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    PROGRESS_FILE.write_text(json.dumps(progress, indent=2))
 
 
 def run_one(model: str, provider: str, seed: int, samples, output_dir: Path) -> dict:
@@ -89,7 +106,7 @@ def run_one(model: str, provider: str, seed: int, samples, output_dir: Path) -> 
     if summary.get("seed") != seed or summary.get("model") != model:
         print(f"    WARNING: summary seed/model = {summary.get('seed')}/{summary.get('model')} "
               f"(expected {seed}/{model}); using newest summary anyway.")
-    return summary
+    return summary, new[-1]
 
 
 def ci95(values) -> tuple:
@@ -146,6 +163,10 @@ def main():
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     bdd_output = Path(args.bdd_output)
+    progress = load_progress()
+    if progress:
+        print(f"[resume] checkpoint has {len(progress)} completed (model, seed) pair(s); "
+              f"these will be skipped. Delete {PROGRESS_FILE.name} to force a full re-run.")
 
     csv_rows = ["model,condition,mean_pass_rate,sd,ci95_lower,ci95_upper,n_seeds"]
     md = [f"# Multi-seed robustness ({datetime.now().strftime('%Y-%m-%d %H:%M')})",
@@ -159,8 +180,17 @@ def main():
 
         summaries = []
         for seed in args.seeds:
+            key = f"{model}|{seed}"
+            prev = progress.get(key)
+            if prev and Path(prev).exists():
+                print(f">>> [resume] {model} seed={seed} already done -> {Path(prev).name}")
+                summaries.append(json.loads(Path(prev).read_text()))
+                continue
             try:
-                summaries.append(run_one(model, provider, seed, args.samples, bdd_output))
+                summary, summary_path = run_one(model, provider, seed, args.samples, bdd_output)
+                summaries.append(summary)
+                progress[key] = str(summary_path)
+                save_progress(progress)  # checkpoint immediately so an interrupt keeps this pair
             except subprocess.CalledProcessError as e:
                 print(f"    RUN FAILED (model={model}, seed={seed}): {e}")
             except RuntimeError as e:
