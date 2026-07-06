@@ -1,3 +1,0 @@
-{"task_id": "HumanEval/163", "with_bdd": true, "passed": false, "error": "Error code: 404 - {'error': {'code': '404', 'message': 'Resource not found'}}"}
-{"task_id": "HumanEval/28", "with_bdd": true, "passed": false, "error": "Error code: 404 - {'error': {'code': '404', 'message': 'Resource not found'}}"}
-{"task_id": "HumanEval/6", "with_bdd": true, "passed": false, "error": "Error code: 404 - {'error': {'code': '404', 'message': 'Resource not found'}}"}
